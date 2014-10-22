@@ -1,0 +1,30 @@
+
+  - Refresh of windows under X11 does not work according to Nils Mueller,
+    heino@psi.ozw.mayn.de
+
+  - Change font detection from LC_TYPE. According to Thorsten Blum it is
+    defined as
+
+	<locale name>	::= <language>_<territory>.<encoding>
+	<language>	::= based on ISO 639
+	<territory>	::= based on ISO 3166 (country code)
+	<encoding>	::= "EUC", "KOI8-R", ...
+
+    but this clashes with most Linux systems.
+
+  - More vga compatible X fonts.
+
+  - Implementation of objects with only a single instance should be changed
+    to reflect this. This suggestion is from Ralf Stephan, ralf@ark.franken.de,
+    I'm currently thinking about a good general solution.
+
+  - Support for KOI-8r character set. Michael Rodiono sent (incomplete)
+    tables for the line drawing characters. This would best be coupled
+    with the changed handling of LC_CTYPE.
+
+  - Change spunk to support CP850 (multi national) on IBM compatibles as
+    default, add code to support code page switching and translation tables
+    for other code pages.
+
+  - Docs, docs, docs...
+

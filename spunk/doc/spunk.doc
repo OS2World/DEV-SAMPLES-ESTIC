@@ -1,0 +1,1045 @@
+
+				SPUNK
+		     Version 1.10, February '96
+
+  A portable C++ class library for creating text mode applications
+
+		  (C) 1992-96 Ullrich von Bassewitz
+			<uz@ibb.schwaben.com>
+
+
+
+
+
+Abstract
+--------
+
+SPUNK is a C++ class library that supports writing text mode
+applications that are portable between different operating systems
+that are popular on the IBM PC.
+
+This is not a complete documentation but merely an overview. It should
+enable you to know, what is possible with SPUNK, and where to you have
+to search for more information in the source.
+
+
+
+
+Contents
+--------
+
+1	Overview
+1.1	....... Some critic at the beginning
+1.2	....... Data types
+1.3	....... Error handling
+1.4	....... Portability
+1.4.1	............... Overview
+1.4.2	............... Concrete steps
+1.5	....... Persistent objects
+1.6	....... Resources
+1.6.1	............... Naming conventions
+1.6.2	............... National language versions of resources
+1.6.3	............... The resource editor ResEd
+1.7	....... General purpose objects
+1.7.1	............... class Point
+1.7.2	............... class Rect
+1.7.3	............... class String
+1.7.4	............... class Container
+1.7.5	............... class MemPool
+1.7.6	............... class StringPool
+1.7.7	............... class Stack
+1.7.8	............... class FIFO
+1.7.9	............... class BitSet
+1.7.10	............... class CharSet
+1.7.11	............... class ListNode
+1.7.12	............... class Collection
+1.7.13	............... class SortedCollection
+
+2	Windows and menues
+2.1	....... Window coordinates
+2.2	....... Window colors
+2.3	....... Window states
+2.4	....... ItemWindows - windows that contain items
+2.5	....... Menues
+2.5.1	............... Menu items
+2.5.2	............... Edit items
+
+3	Creating an application
+3.1	....... class Program
+3.2	....... The program resource
+3.3	....... Environment variables
+3.3.1	............... The SPUNK_LANGUAGE setting
+3.3.2	............... The SPUNK_COUNTRY setting
+3.3.3	............... The SPUNK_COLOR setting (Linux/FreeBSD)
+3.3.4	............... The SPUNK_CP437 setting (Linux/FreeBSD)
+3.3.5	............... The SPUNK_CTYPE setting (Linux/FreeBSD)
+3.3.6	............... The SPUNK_XINVERTMONO setting (X windows)
+3.3.7	............... The SPUNK_XFONT setting (X windows)
+3.4	....... Signal handling
+3.5	....... Useful hints
+
+
+
+
+1 Overview
+----------
+
+SPUNK is a C++ library that allows the creation of text mode programs
+that compile under 16- and 32-bit DOS, Linux, FreeBSD and OS/2.
+
+Apart from that, SPUNK implements
+
+      * many other useful classes such as Strings, Collections, Stacks
+	FIFOs etc.
+
+      * persistent objects. A resource file class allows storing those
+	objects in files and loading them by name at runtime. This
+	allows easy support of different languages and interactive
+	development of menues and windows.
+
+Many of the ideas in this library came from discussions with a friend
+of mine, Michael Peschel, and from another (non portable) text mode
+library written in Turbo-Pascal we wrote together some time ago.
+
+
+
+
+1.1 Some critic at the beginning
+--------------------------------
+
+I would like to point out, that SPUNK is not perfect, not even (and
+this is important) in my own eyes.
+
+If I had to do it again, I would change many things. Some of them have
+"historic" reasons, for example:
+
+      * The string class is not compliant to the ANSI string class
+	definition. At the time, I started to write the SPUNK library
+	there has been no ANSI string class. Because of the nature of
+	persistent objects, I will probably not change the string
+	class of the library.
+
+      * I did not use C++ exceptions for error handling, because
+	most compilers, that were available at that time, had no
+	support for exceptions.
+
+On the other side, I made decisions, that were simply wrong (or just
+not as good as they could have been). One of those wrong decisions, I
+regret most, is the event handling. Event handling in the library is
+clearly not what you would expect from an object orientated library.
+The current event handling (which relies on the application polling
+the keyboard) hinders extensions like mouse support and modeless
+switching between windows.
+
+But since the library is intended to be the last text mode interface,
+I will write in my life, many of those things will not change. Maybe
+I'm able to learn from my mistakes when writing other libraries or
+applications.
+
+
+
+
+1.2 Data types
+--------------
+
+I avoided introducing many new data types using typedef. New data
+types are a constant source of confusion, and because C compilers have
+a very lax type checking, usage of those data types is not enforced by
+the compiler. Source code is difficult to read when using those data
+types (ULONG, APIRET, HPIPE etc.), because you have to know, what each
+type represents.
+
+Even in the OS/2 programmers manual, there are many examples, where
+the result of a API function is stored in a variable of type ULONG,
+but the correct type should be an APIRET (which is an ULONG). This
+shows that many programmers (even those, who should know better) do
+not remember all those different types. Having so many artificial
+types, that no one remembers them all, does not help anyone.
+
+A few very important data types are the ones that are defined in
+machine.h (because they are machine dependent). Those data types are
+used, whenever you need an integer of a predefined size. Use "u32"
+instead of "unsigned int", because the first one will work, even under
+DOS, the second will not.
+
+Apart from that, I used the plain C data types whenever possible.
+There is no new boolean type and there are no typedefs for pointers to
+objects.
+
+
+
+
+1.3 Error handling
+------------------
+
+All SPUNK functions do intensive parameter checking in functions. All
+conditions, where invalid parameters are given, or unexpected error
+codes are returned are handled as fatal errors by the library.
+
+Checking for fatal errors and handling those situations is done via a
+set of macros in check.h. Each of those macro calls the function
+Check, which in turn calls another function via a function pointer if
+the check failed.
+
+On startup, the function vector points to a routine that simply prints
+an error message containing the place of the error and aborts the
+program.
+
+You get such an error message if a SPUNK program could not find it's
+resource file:
+
+	Internal error: Error loading resource file hexed.res, \
+	file program.cc, line 147
+
+When the application object has initialized the window system and
+keyboard handler, it replaces this function by one, that pops up a
+window describing the error. After confirmation of the error by the
+user, the program is aborted. Because all those errors are fatal
+errors, there is no way to save any user data or do cleanups on exit.
+The philosophy behind this is, that if the SPUNK library detects
+massive coding errors in your application, there is a great
+possibility that continuing would result in a desaster.
+
+If you plan to replace the error handling function, you will usually
+leave the function pointer untouched, but override the virtual
+function Program::AppError (which is the one that is called after all
+that macro/function pointer replacement hassle). After returning from
+this function, the virtual function Program::Cleanup is called and the
+program is aborted.
+
+If you decide to replace the error vector yourself, be shure, not to
+return to the calling function! Most macros are used to check for
+invalid parameters or other non-recoverable conditions, so returning
+would would not be good.
+
+
+
+
+1.4 Portability
+---------------
+
+SPUNK is not portable to every computer system under the sun. You will
+probably have very few problems, porting SPUNK to an intel based PC
+system, but trying to port SPUNK to - for example - the Mac might
+become a nightmare.
+
+
+
+
+1.4.1 Overview
+--------------
+
+Most modules that are operating system dependent, are in one of the
+*src directories. Those modules are:
+
+	delay.cc	Wait for a given time.
+	filesys.cc	File system functions that are os dependent
+	kbd.cc		The keyboard handler
+	nlsinit.cc	Initialization for the national language
+			system.
+	screen.cc	The screen handler
+	sercom.cc	This is a module for doing communication via
+			the serial lines.
+
+
+The distinction between os dependent modules and os independent ones
+is not extremely consequent. There are some other modules that contain
+one or two #ifdef's, mostly to select different system include files,
+but also, to do some additional os dependent stuff (limiting memory
+consumption under DOS for example).
+
+Whenever writing data to streams (see the discussion of persistent
+objects below), one of the portable data types mentioned above is
+used (this rule has one exception: floating point types. After many
+discussions, I decided, that the IEEE formats of the intel coprocessor
+are portable enough, so floating point numbers are stored as binary
+values. This is no problem as long as you don't try a Mac port :-)
+
+This means, that resources are portable between the supported
+operating systems. If your DOS application stores a window in a file,
+your Linux, FreeBSD or OS/2 application is able to load and display
+this window.
+
+Note: If you create your own persistent objects, you are yourself
+responsible for the data, you write to the stream. For example:
+
+	enum { red, green, blue } Color;
+	...
+	S << Color;
+
+is _not_ portable, because the size of an enum differs from compiler
+to compiler. Use a cast to and from a data type with a constant size
+when storing and loading enums.
+
+
+
+
+1.4.2 Concrete steps
+--------------------
+
+[Missing]
+
+
+
+
+1.5 Persistent objects
+----------------------
+
+Many of the objects implemented by SPUNK are persistent. This means,
+that there lifetime may exceed the lifetime of the program.
+
+Persistent objects are heavily used throughout the library. They are
+the framework for the complete resource management (see below).
+
+Knowledge of two classes is needed to understand, how persistent
+objects work:
+
+First, there is a stream class, that can hold a stream of persistent
+objects. Second there is an anchestor class for all persistent
+objects: class Streamable.
+
+If you create persistent objects yourself, they have to be derived
+from class Streamable (or a descendant of class Streamable). In
+addition, you have to override/provide one or more of the following
+functions:
+
+    virtual void Load (Stream&);
+    virtual void Store (Stream&) const;
+    virtual u16 StreamableID () const;
+    static Streamable* Build ();
+
+Plus an additional "build constructor", that takes an argument of type
+StreamableInit and initializes an empty instance.
+
+Load and Store write and read the instance data to/from the stream
+given as an argument. You may call the Load and Store functions of the
+anchestor to handle his data.
+
+StreamableID must return a unique 16 bit number, that identifies your
+object. Please use ID's above or equal to ID_USER (defined in
+streamid.h) for your own applications as values below ID_USER are
+reserved for use in the SPUNK library.
+
+Build simply returns a new instance created by the use of the build
+constructor.
+
+This probably sounds very complicated, but in reality is easy, because
+three of the functions mentioned above are "one line functions" that
+are essentially the same for every object.
+
+Let's try an example. Assume you have a class Msg that is derived from
+class String (which in turn is derived from class Streamable), that
+adds an u16 to the object data (the message number).
+
+A simplified implementation of the class interface might look like
+this:
+
+    class Msg : public String {
+
+    private:
+	u16	    MsgNum;
+
+    public:
+	// The build constructor:
+	Msg (StreamableInit);
+
+	// A "normal" constructor
+	Msg (u16 Num, const char* S);
+
+	// Derived from class Streamable
+	virtual void Load (Stream&);
+	virtual void Store (Stream&) const;
+	virtual u16 StreamableID () const;
+	static Streamable* Build ();
+    };
+
+
+And this is the implementation of the functions defined above:
+
+    inline Msg::Msg (StreamableInit):
+	String (Empty)
+    {
+    }
+
+    void Msg::Load (Stream& S)
+    {
+	String::Load (S);	// Handle data of class String
+	S >> MsgNum;		// Handle instance data
+    }
+
+    void Msg::Store (Stream& S) const
+    {
+	String::Store (S);	// Handle data of class String
+	S << MsgNum;		// Handle instance data
+    }
+
+    u16 Msg::StreamableID () const
+    {
+	return ID_Msg;		// Defined elsewhere, just a number
+    }
+
+    Streamable* Msg::Build ()
+    {
+	return new Msg (Empty); // Return an empty object
+    }
+
+
+
+As you can see, most functions needed for making an object persistent
+are very simple, especially the build constructor is usually empty,
+StreamableID and Build are one-liners.
+
+One (last) thing: You have to add a line like
+
+	LINK (Msg, ID_Msg);
+
+to the top of your .cc file. This will register the streamable class
+at the stream manager whenever this module is linked in by your
+application. If you get an error message "ID 6789 not registered" when
+trying to load a resource, you forgot the above statement.
+
+The other side of persistent objects is a class of type Stream.
+Usually you don't have to deal with objects of types Stream (apart
+from creating and destroying them). Streams are something, you can
+write objects (or just data) to or read from. A very popular
+descendant of class Stream is class FileStream that implements a
+Stream using a disk file (I know that the word stream is somewhat
+overstressed, especially in the unix world, but I cannot change that).
+
+But this is not the only purpose, you can use streams for. Assume, you
+have created an object containing program options, that are stored on
+disk and that can be edited by the user of your application. After
+finished editing, you may want to know, if the user has actually
+changed anything, so you can ask him, if he wants to store the new
+data or discard the changes. One possibility is to check each and
+every member variable against the old value, that has been saved
+before the editing. This is a clumsy and complicated, approach
+especially if your object has many data members.
+
+For a better solution another descendant of class Stream is used:
+class CRCStream. A CRCStream is derived from a special stream class,
+that simply discards all data written to it. Class CRCStream
+"enhances" this behavior by calculating a crc checksum over the data
+written.
+
+So you may do the following:
+
+	// Before editing:
+	CRCStream CS1;
+	CS1 << MyObj;
+	u32 OldCRC = CS1.GetCRC ();
+
+	// After editing:
+	CRCStream CS2;
+	CS2 << MyObj;
+	int HasChanges = CS2GetCRC () != OldCRC;
+
+This may be further simplified by using the global function GetCRC
+which creates a new CRCStream, writes the object to it and returns the
+CRC of the object data. See crcstrm.h for more details.
+
+One of the most asked questions regarding streams is the following:
+What is the difference between using Load/Store, the operators <</>>
+and using Put and Get on a stream? When should you use one and when
+the other(s)?
+
+The solution is simple: Using Load and Store is the same as using the
+operators << and >>. If you have a look into strmable.h, you will
+notice, that the operators << and >> are implemented using Load and
+Store, both being virtual functions that are usually overriden by
+your own persistent objects.
+Load and Store write and read object data to and from the stream, but
+they don't provide a way for object identification. So, to load object
+data from a Stream using Load, you have to create an empty object
+yourself and you have to make shure, that the data beginning at the
+current stream position is data belonging to the object just created.
+
+Put and Get do more: Get identifies the object at the current stream
+position, creates an empty object of that type on the heap, loads the
+instance data to this object and returns the object just created. Put
+writes out the identification data needed by Get, together with the
+instance data of the object.
+
+
+
+
+1.6 Resources
+-------------
+
+Imagine to have something like a stockkeeping for persistent objects.
+If you had this, you could say to the stock-keeper "Please give me a
+copy of the window called 'About-Window', a german version would be
+fine".
+
+Persistent objects stored in such a manner are called resources.
+
+When your application starts, the constructor of the Program object
+will search for the resource file for your application. This resource
+file is usually created by copying the library resource file
+"baseres.res" to your application resource file, and then adding the
+resources needed by your application.
+
+The resource file contains many different types of objects, for
+example:
+
+      * Menues and windows.
+      * Messages.
+      * Other data like character translation tables.
+
+
+
+
+1.6.1 Naming conventions
+------------------------
+
+I have developed the following rules for the names of resources.
+However, you are free to use your own rules as the library does not
+enforce any naming conventions (apart from the names of the language
+specific resources, see below for details).
+
+      - Resources may have any name (you can even use spaces inside
+	the name)
+      - The name is preceeded by the name of the module that uses
+	the resource in capital letters.
+      - The module name is separated from the resource name by a dot.
+      - Application resources add a @ in front of the module name.
+	This way, application resources are grouped together in the
+	resource directory before the library resources.
+
+Example 1, editor window for the password module, generic version:
+
+	PASSWORD.EditWindow
+
+Dito, german version (see below)
+
+	001.PASSWORD.EditWindow
+
+Example 2, application resource, generic version:
+
+	@HEXOPT.EditWindow
+
+Dito, german version (see below):
+
+	001.@HEXOPT.EditWindow
+
+
+
+
+1.6.2 National language versions of resources
+---------------------------------------------
+
+Support of different languages consists in many situations in just
+loading another menu or message. The Program::LoadResource function
+supports this by automatically choosing the correct resource according
+to the current language. This works as follows:
+
+Every language is assigned a number. If you load a resource by name,
+the function mentioned above will first add the number before the
+resource name and try to find this resource. If the resource is found,
+it is loaded. If not, the generic version without a preceeded language
+number is tried. As a last ressort, the english version (language #2)
+is tried.
+
+Let's look at the following example. Your code contains the statement
+
+    // Load the edit window
+    Menue* Win = (Menue*) LoadResource ("@HEXOPT.EditWindow");
+
+If the current language is set to german (1), Program::LoadResource
+will search for
+
+	001.@HEXOPT.EditWindow
+
+If it does not find this resource, it will try
+
+	@HEXOPT.EditWindow
+
+If this fails, it will try the english version
+
+	002.@HEXOPT.EditWindow
+
+So multiple languages are easily supported by providing different
+resources. If you decide to add another language, you don't have to
+change your source code, adding new resource will usually by enough.
+
+
+
+
+1.6.3 The resource editor ResEd
+-------------------------------
+
+To simplify the usage of resource files, there is a resource editor
+called ResEd.
+
+With ResEd you can...
+
+      * create menues and windows and add them to the resource file.
+
+      * delete resources you don't need any longer.
+
+      * merge resource files. The resources in the resource file that
+	are merged overwrite already existing resources. This is
+	useful if you want to update your application specific
+	resource from a new base resource file (containing the
+	library resources).
+
+      * add data files. ResEd will create a container object that
+	contains your data and write this container object to the
+	resource file.
+
+      * create and edit message bases containing the messages used by
+	your application. Messages can also be read from a text file.
+
+      * print resources to a file or to the printer.
+
+Beware: ResEd is a developers tool, not an end user application.
+Because of that, it has some rough edges. It is not a typical SPUNK
+application - in many places ResEd is a hack (yes, I have to admit
+that :-)
+
+
+
+
+1.7 General purpose objects
+---------------------------
+
+SPUNK contains many general purpose objects that are useful, even if
+you are not using any windows. This does not mean, that those objects
+are completely independent from the rest of the library! All classes
+mentioned below use the SPUNK error handling and (maybe) other SPUNK
+classes to implement functionality.
+
+
+
+
+1.7.1 class Point
+-----------------
+
+This class (it is actually a struct) is defined in rect.h. A Point
+consists of a X/Y pair of coordinates. There are some funtions to work
+with objects of class Point, for example comparing two Points or
+writing instances of class Point to a stream.
+
+
+
+
+1.7.2 class Rect
+----------------
+
+A Rect consists of two Points, one describing the upper left, the
+other the lower right corner of a rectangle. There are many utility
+functions, for example to calculate the union or intersection of two
+rectangles. Instances of class Rect are persistent and can be written
+to a stream.
+Class Rect is defined in rect.h
+
+
+
+
+1.7.3 class String
+------------------
+
+Class String is defined in str.h. Have a look at the header file for a
+description of all member and friend functions. Strings are very
+intensively used throughout the SPUNK library. A direct descendant of
+class String, is used to store Strings by numbers in resource files.
+The class String is not compatible to the class String of the new
+standard C++ library. This is because my class String is much older
+than the standard.
+
+
+
+
+1.7.4 class Container
+---------------------
+
+Objects of class Container do nothing more but hold data. They are
+used to put an "object envelope" around some data, to handle it in an
+object oriented fashion. Containers are persistent, so you can use
+instances of class Container to store data in streams using the usual
+Stream::Put and Stream::Get methods.
+
+
+
+
+1.7.5 class MemPool
+-------------------
+
+This is a template class that is used to create a memory pool for
+identical objects. The memory pool may grow but not shrink. This is
+ideal if you need to gather data and throw it away completely after
+use. Class MemPool is a base class of class StringPool. The latter has
+been used for the identifier table of a compiler I wrote.
+
+
+
+
+1.7.6 class StringPool
+----------------------
+
+Class StringPool is derived from class MemPool. It implements a pool
+for strings of varying size that can be accessed by name or by index.
+It has been used as an identifier table for a compiler.
+
+
+
+
+1.7.7 class Stack
+-----------------
+
+This is a template class that implements a stack ob objects.
+
+
+
+
+1.7.8 class FIFO
+----------------
+
+This is a template class that implements an object queue.
+
+
+
+1.7.9 class BitSet
+------------------
+
+Class BitSet can hold a set of numbers, internally implemented by a
+set of bits. You can check if a number is a member of the set and do
+many other operations on this set. The numbers must not start from
+zero, you can give other values for the upper and lower bounds on
+creation.
+
+
+
+
+1.7.10 class CharSet
+--------------------
+
+Because of speed considerations this bitset class has not been derived
+from class BitSet. It is a class that can hold a set of characters
+(values 0..255).
+
+
+
+
+1.7.11 class ListNode
+---------------------
+
+This is a template class that is used to build double linked circular
+lists. There are many places in the library, where objects of class
+ListNode are used: ItemWindows for example hold a linked list of the
+items contained in the windows in such a list.
+
+ListNode objects are not persistent for themselves, but have some
+support for writing persistent items to a stream.
+
+See listnode.h for implementation details.
+
+
+
+
+1.7.12 class Collection
+-----------------------
+
+Class Collection is a template class. Collections are best thought of
+as dynamically allocated arrays. Collections contain pointers to
+objects (preferably of the same type). Depending on the
+initialization, Collections will dynamically grow if you add more
+objects. You can iterate through every member of a Collection, add and
+delete members and more.
+
+Collections are streamable (persistent). See coll.h for more details.
+
+
+
+
+1.7.13 class SortedCollection
+-----------------------------
+
+Class SortedCollection is a descendant of class Collection. Members of
+class SortedCollection are stored in a sorted fashion. The sort is
+done by a key, that you have to provide.
+Searching a member in a SortedCollection is much faster, because the
+sort allows a binary search to be used.
+
+
+
+
+2 Windows and menues
+--------------------
+
+A window as it is implemented in the window module is a rectangular
+area on the screen. A window may have a frame and it may be in
+different states.
+
+There are many functions to work with windows, you can write text to a
+window (even to an invisible window), you can move and resize the
+window, change the window palette etc.
+
+
+
+
+2.1 Window coordinates
+----------------------
+
+
+
+
+2.2 Window colors
+-----------------
+
+Window colors are not given as absolute screen colors but as indices
+into a window palette. There are 9 predefined palettes, but your
+program may add more. Every palette must exist in a color and in a
+monochrome version. Palettes are managed by an object of class Palette
+that is created on startup. A window holds just the number of the
+palette it uses. As every color is not a real color but an index into
+the current palette, changing the palette number changes all colors of
+the window.
+
+There are some rules used throughout the library for using the
+different palettes. There are special palettes for error and system
+error windows. Menues use the gray palette, editor windows are blue,
+notification windows are cyan and so on.
+
+
+
+
+2.3 Window states
+-----------------
+
+
+
+
+2.4 ItemWindows - windows that contain items
+--------------------------------------------
+
+An ItemWindow is a window that contains some other objects that are
+displayed inside the window.
+
+
+
+
+2.5 Menues
+----------
+
+
+
+
+2.5.1 Menu items
+----------------
+
+
+
+
+2.5.2 Edit items
+----------------
+
+
+
+
+3 Creating an application
+-------------------------
+
+Creating an application with SPUNK is easy. Have a look into the files
+skel.h and skel.cc - they contain a complete program skeleton. All you
+have to do is to add functionality.
+
+
+
+
+3.1 class Program
+-----------------
+
+All programs have an application object that is derived from class
+Program. Things do not happen in functions called from main, but in
+the context of this application object and its member functions.
+
+Usually your function main looks like this:
+
+    int main (int argc, char** argv)
+    {
+	MyProgramObj MyApp (argc, argv);
+	return MyApp.Run ();
+    }
+
+A pointer to the (one and only) program object is stored in the global
+variable App. This allows accessing member functions of your program
+object from other places.
+The constructor of class Program will take the argument list and
+explode any wildcard arguments when run under DOS or OS/2. After
+that, you may access the argument list via the member variables
+ArgCount and ArgVec from anywhere in your program.
+
+
+
+
+3.2 The program resource
+------------------------
+
+The constructor of class Program will search for the program resource
+and open it. There has to be a program resource, because many
+functions in the library try to access this resource. The resources
+needed by the library are contained in a file named baseres.res. When
+you start developing your program, create your resource file by
+copying this base resource to your program resource, then add your own
+resources to this file.
+
+There are many utility functions that access the resource file. Most
+functions are functions of class Program, but have a counterpart in a
+global function to make accessing this functions easy. There is, for
+example, a function Program::LoadResource and a global function
+LoadResource.
+
+Note: One of the functions to access the resource is somewhat
+dangerous. To load a message, do not call LoadMsg! This will try to
+find the message in the message base called PROGRAM.Messages. Use
+LoadAppMsg instead to load your application messages. LoadAppMsg loads
+the messages from a message base that has the name of your program
+preceeded with '@' and ".Messages" added (eg. @HEXED.Messages). The
+Language specific version of this message base is searched first (as
+described above).
+
+
+
+
+3.3 Environment variables
+-------------------------
+
+The SPUNK library in general uses some environment variables to change
+the inner workings of spunk to the environment, in which the
+application is running. Some other settings are used under the Unix
+like operating systems.
+
+
+
+
+3.3.1 The SPUNK_LANGUAGE setting
+--------------------------------
+
+
+
+
+3.3.2 The SPUNK_COUNTRY setting
+-------------------------------
+
+
+
+
+3.3.3 The SPUNK_COLOR setting (Linux & FreeBSD only)
+----------------------------------------------------
+
+Use the environment variable SPUNK_COLOR to force the Linux screen
+module to use (ANSI compatible) color strings or not. The default
+is to use colors on the console (which is automagically detected
+by the screen module).
+This setting is useful if you are connected via a DOS or OS/2
+terminal program that supports colors.
+
+Use on of
+
+    "yes", "on", "1"		to force the use of color
+
+    "no", "off", "0"		to disable colors
+
+Case is ignored when looking at the values of environment strings.
+
+Beware: Using SPUNK_COLOR=yes in an XTerm window won't look very good
+for two reasons. First, XTerm has a very strange default color
+mapping. But second (and this is even worse), XTerm does not support
+enough colors (16 are needed, 8 supported). I have heard of an XTerm
+clone that supports ANSI colors, but I have not tested this. Use the X
+backend when running spunk apps under X if possible.
+
+
+
+
+3.3.4 The SPUNK_CP437 setting (Linux & FreeBSD only)
+----------------------------------------------------
+
+Use the environment variable SPUNK_CP437 to tell the Linux screen
+module that your terminal supports the IBM codepage 437. Given this
+setting, the screen module will not translate from the internal
+used character set and will use the IBM linedrawing characters which
+will make framed windows look much nicer.
+Default is to use this setting on the console (after switching the
+console character set to codepage 437).
+This setting is useful if you are connected via a DOS or OS/2
+terminal program that supports the IBM codepage 437.
+
+Use on of
+
+    "yes", "on", "1"		to force the use of the codepage 437
+
+    "no", "off", "0"		to disable the use of codepage 437
+
+Case is ignored when looking at the values of environment strings.
+
+
+
+
+3.3.5 The SPUNK_CTYPE setting (Linux/FreeBSD)
+---------------------------------------------
+
+Since the possible values of LC_CTYPE differ widely from operating
+system to operating system (and also between the different versions of
+one operating system), SPUNK_CTYPE is the last resort if you cannot
+change the value of LC_CTYPE for some reason. The setting for
+SPUNK_CTYPE overrides the one from LC_CTYPE. There is currently only
+one possible value:
+
+	ISO-8859-1	Use the ISO-8859-1 character set
+
+Case is ignored when evaluating the string.
+
+
+
+
+3.3.6 The SPUNK_XINVERTMONO setting (X windows)
+-----------------------------------------------
+
+
+
+
+3.3.7 The SPUNK_XFONT setting (X windows)
+-----------------------------------------
+
+The X backend tries to use a font named VGA for it's display. This
+font comes with dosemu under Linux and is a fixed size font that has
+the VGA (CP 437) character set. If you don't have this font (Linux
+usually has it, FreeBSD has it not), you may use any other fixed size
+font. Just set SPUNK_XFONT to the name of the font, you want to use.
+If the name of the font starts with "vga" (any case), spunk assumes
+that the codepage 437 is available. If it does not start with "vga",
+spunk assumes an ascii font. If you are using an ISO-8859-1 font,
+don't forget to set LC_CTYPE or SPUNK_CTYPE so that spunk will use the
+correct character set.
+
+Usage of the vga font is strongly encouraged since this will look much
+better than using one of the ISO8859-1 fonts.
+
+
+
+
+3.4 Signal handling
+-------------------
+
+The application object by default catches all important signals and
+reroutes them to virtual functions that may be overridden by derived
+objects. Each of those signal handling functions returns an int that
+says if the signal has been handled by the function. If the function
+returns zero (meaning, the signal has not been handled), the signal
+is re-raised without reinstalling the signal handler, so that the
+default action occurs.
+
+So you don't have to use the signal() function to catch any signals,
+this is done for you by the application. Just define your own virtual
+signal handling function, which is automatically activated when a
+signal is caught.
+
+
+
+
+3.5 Useful hints
+----------------
+
+

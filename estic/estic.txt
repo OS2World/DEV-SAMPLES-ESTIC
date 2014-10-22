@@ -1,0 +1,1077 @@
+
+
+		      ESTIC V 1.50, 31.01.1997
+
+	  Enhanced Supervisor Tool for ISTEC Configuration
+
+	     Copyright (C) 1995-97 Ullrich von Bassewitz
+			<uz@ibb.schwaben.com>
+
+
+
+0. Allgemeines
+--------------
+
+ESTIC ist ein Konfigurationsprogramm für die ISTEC ISDN-Anlagen der
+Firma Emmerich. Neben der Konfiguration der Anlage kann ESTIC ein
+Logfile über die ausgehenden Gespräche zusammen mit Nummer/Zeitpunkt/
+Dauer/Kosten führen. Weiterhin ist als zusätzliches "Schmankerl" für
+ISDN4Linux Benutzer ein ISDN4Linux Monitor integriert.
+
+ESTIC basiert auf meiner portablen Klassenbibliothek SPUNK, deshalb
+sind Versionen für DOS, OS/2, Windows NT, Linux, FreeBSD und diverse
+andere Unixe verfügbar. Für die Unix-Versionen ist es sinnvoll,
+bestimmte Environment-Variablen zu setzen (siehe weiter unten,
+"Betrieb unter den verschiedenen Plattformen").
+
+
+
+1. Ausschluss jeglicher Gewährleistung
+--------------------------------------
+
+ESTIC basiert auf frei verfügbaren Informationen über die Schnitt-
+stelle der ISTEC ISDN-Anlagen sowie auf eigenen Forschungen von mir.
+ESTIC hat *nichts* mit der Firma Emmerich zu tun sondern ist eine
+Eigenentwicklung, die in keiner Form von Emmerich unterstützt oder
+gutgeheißen wird.
+Bei Verwendung von ESTIC trägt der Anwender alle daraus entstehenden
+Folgen trägt ganz alleine - jegliche Gewährleistung von mir in dieser
+Richtung ist ausgeschlossen. Ich möchte speziell darauf hinweisen, daß
+die Software Fehler enthalten kann, die zur Zerstörung oder Unbrauch-
+barmachung der Anlage führen können. Wer also auf das Funktionieren
+seiner Anlage *angewiesen* ist, sollte ESTIC auf gar keinen Fall
+verwenden.
+
+(Kleiner Trost: Meine ISTEC 1008 funktioniert nach wie vor einwandfrei
+- trotz aller Tests mit früheren Versionen von ESTIC).
+
+
+
+2. Benutzung
+------------
+
+ESTIC ist menuegeführt und relativ einfach bedienbar. Praktisch alle
+Funktionen des Programms ISTEC.EXE von Emmerich sind in der einen oder
+anderen Art und Weise vorhanden. Weiter unten steht eine Liste der
+Einschränkungen.
+
+
+
+3. Unterschiede zum Konfigurationsprogramm von Emmerich
+-------------------------------------------------------
+
+Es gibt einige Unterschiede gegenüber dem Programm ISTEC.EXE von
+Emmerich.
+
+  * Passwörter für Admin- und Diagnosemodus fehlen. Alle Funktionen
+    sind ohne Passwörter verfügbar.
+  * Die Aufteilung der Funktionen in den Menues ist anders (in meinen
+    Augen klarer - aber das ist Geschmackssache). Es gibt eine klare
+    Trennung in Anlagenparameter und Parameter für Endgeräte.
+  * Textmodus-Oberfläche, keine Maus und ähnlicher Schnickschnack :-)
+  * Ausdruck ist anders gegliedert, es werden nur reine Textdateien
+    unterstützt.
+  * Format der *.IC Dateien ist anders, diese können (im Gegensatz zu
+    früher) nicht mehr zwischen den beiden Programmen ausgetauscht
+    werden.
+  * Diverse zusätzliche Funktionen.
+
+
+
+4. Fähigkeiten von ESTIC
+------------------------
+
+4.1 Das Logging Feature
+-----------------------
+
+ESTIC ist in der Lage, sämtliche ausgehenden externen Gespräche
+zusammen mit Zielrufnummer, verbrauchten Einheiten und angefallenen
+Kosten mitzuprotokollieren. Das setzt allerdings voraus, daß ESTIC
+auch läuft, wenn telefoniert wird. Dieses Feature dürfte vor allem
+für Linux- und FreeBSD Benutzer recht interessant sein.
+
+ACHTUNG: Es hat in der Vergangenheit etwas Verwirrung darüber gegeben,
+was hier möglich ist und was nicht. Tatsache ist, daß ESTIC dazu
+undokumentierte Features der Istec ausnutzt, und zudem vom korrekten
+Funktionieren dieser Features abhängig ist. Leider ist es in der
+Realität so, daß die Istec Firmware je nach Version mehrere Fehler hat,
+weiterhin ist auch das Verfahren an sich schon recht fehlerträchtig.
+Es ist deshalb mit einer Fehlerquote bei den erfassten Gesprächen zu
+rechnen, die (hier bei mir) bei etwa 1-2% der Gespräche liegt. Je nach
+Konfiguration und Firmware der Istec kann dieser Wert aber auch höher
+(oder niedriger) sein.
+
+ESTIC kann bis zu drei verschiedene Logfiles anlegen, deren Namen sich
+von der Uhrzeit und vom Datum ableiten können. Dadurch ist es recht
+einfach möglich, für jeden Tag oder für jeden Monat ein neues Logfile
+zu erstellen, ohne daß ein Eingriff von außen notwendig ist. Nähere
+Erläuterungen dazu finden sich in der Datei estic.ini.
+
+Um das Logging abzustellen ist bei allen drei Logfiles in der Datei
+estic.ini ein Leerstring einzutragen.
+
+Speziell um die Linux-Benutzer über die Tatsache hinwegzutrösten, daß
+zum Loggen ein interaktives Programm dauernd laufen muss, habe ich
+zusätzlich einen kleinen Monitor für ISDN4Linux von Fritz Elfert
+eingebaut. Wer also unter Linux eine ISTEC und ISDN4Linux verwendet,
+hat mit ESTIC sein ISDN Equipment im total vollen geilen Zugriff :-)
+Siehe dazu auch der Abschnitt "ISDN4Linux Monitor".
+
+
+4.2 Diagnosemodus
+-----------------
+
+Dargestellt wird die intere Verbindungsmatrix der ISTEC, die
+Schleifen- und Rufzustände der einzelnen Apparate sowie von der
+ISTEC erkannte Wähl- und Schaltvorgänge. Die Darstellung erfolgt
+parallel zur eigentlichen Funktion, d.h. alle Funktionen von ESTIC
+können weiterhin genutzt werden, auch wenn der Diagnosemodus
+eingeschaltet ist.
+
+Mit der Version 1.20 entfällt das bisher vorhandene Statusfenster,
+die Information über die Wählvorgänge wird direkt im Matrixfenster
+untergebracht. Das ist wesentlich übersichtlicher, man kann anhand
+des Fensters auf einen Blick erkennen, wo telefoniert wird, bei
+ausgehenden Gesprächen auch, wohin.
+
+Einschränkungen des Diagnosemodus:
+
+  * Die unterstützten Funktionen sind rein passiv, da durch eine
+    unsachgemäße Beeinflussung der Matrix von außen die ISTEC evtl.
+    beschädigt werden kann.
+
+  * Im Diagnosemodus überträgt die ISTEC nur Delta-Werte an ESTIC.
+    D.h. ESTIC kennt den Grundzustand beim Einschalten des Diagnose-
+    modus nicht und nimmt an, daß alle Zuständen auf "aus" bzw.
+    "inaktiv" stehen. Das kann zu Fehlinterpretationen führen wenn der
+    Diagnosemodus zu einem Zeitpunkt eingeschaltet wird, zu dem
+    bereits Funktionen aktiv sind, z.B. nach Abheben eines Hörers.
+    Ein spezielles Problem ist die Angabe der Apparatenummer bei
+    Tonwahl: Die ISTEC überträgt bei erkannter Tonwahl nicht die
+    Nummer des Gerätes (wie bei der Pulswahl), sondern die Nummer des
+    intern durch das Gerät belegten Kanals. Dieser Kanal wird beim
+    Abheben des Hörers (Schleife aktiv) belegt. Wird der Diagnosemodus
+    erst nach Abheben des Hörers gestartet, dann kennt ESTIC die
+    Zuordnung interner Kanal <--> Gerätenummer nicht und gibt folglich
+    die falsche Apparatenummer bei der Tonwahl aus (immer Gerät 21).
+
+  * Aufgrund von interen Puffer-Überläufen in der Istec-Software kann
+    es bei einem hohen Nachrichtenaufkommen dazu kommen, dass
+    Nachrichten verloren gehen (das bedeutet normalweise auch, daß
+    für dieses Gespräch keine Gebühren erfaßt werden können!).
+
+
+4.3 Cron Funktion
+-----------------
+
+Ab der Version 1.40 besitzt ESTIC eine eingebaute Cron Funktion mit
+deren Hilfe Ereignisse zu bestimmten Zeiten ausgelöst werden können.
+Über dieses Feature kann z.B. ein automatisches Speichern und
+Rücksetzen der Gebühren am Monatsende, oder eine Tag-/Nachtschaltung
+implementiert werden.
+
+Die Verwendung dieses Features setzt voraus, daß ein dauernd laufender
+Rechner mit ESTIC und einer Verbindung zur Istec vorhanden ist!
+
+Zum Aktivieren wird in estic.ini ein Dateiname für die Cron-Datei
+angegeben. Eine Beispieldatei findet sich in der Distribution, dort
+ist auch die Syntax erklärt (für Unix-Benutzer: Die Syntax
+unterscheidet sich fast nicht von derjenigen des Unix crons).
+
+Folgende Aktionen können ausgelöst werden:
+
+  PrintCharges <Dateiname>    # Speichert die aktuelle Gebühren
+  ClearCharges		      # Setzt die Gebühren zurück
+  LoadConfig <Dateiname>      # Lädt neue Einstellungen in die Istec
+  Ring <Gerät> <Dauer>	      # Läßt den Apparat für <Dauer> Sekunden
+			      # klingeln
+  ReadCronFile		      # Cron Datei neu einlesen
+
+PrintCharges entspricht dabei nicht der manuellen Funktion "Gebühren
+drucken", es wird ein etwas einfacheres Format ohne jegliche Header
+verwendet. Die Weiterverarbeitung dieser Datei ist problemlos mit awk
+oder ähnlichen Programmen möglich.
+
+Ring läßt ein angeschlossenes Telefon im Sekundentakt klingeln, bis
+die eingestellte Zeit vorbei ist, oder bis der Hörer abgehoben wird.
+Da ESTIC kein "echtes" Multitasking macht (auch wenn es manchmal so
+aussieht), und da ESTIC jede Sekunde das Klingelzeichen an- oder
+abschalten muß ergibt sich eine etwas "ruckelige" Bedienung, wenn
+Ring aktiv ist. Die Datei estic.ini enthält einen Schalter,
+ShortWaitAfterMsg, der diesen Effekt etwas mindert, von dem ich aber
+bisher nicht weiß, ob er ohne Nebenwirkungen ist.
+
+ACHTUNG: Ring bitte nicht für Anschlüsse verwenden, an denen kein
+	 Telefon hängt!
+
+Fehler, die bei der Abarbeitung entstehen (z.B. wenn Dateien nicht
+geöffnet werden können) werden in's Debug-Log geloggt. Wer neue Einträge
+in der Cron Datei testet, sollte deshalb auch das Debug-Log aktivieren
+(siehe Abschnitt "Debug-Log").
+
+
+4.4 Aliase für Rufnummern
+-------------------------
+
+Sowohl für die internen Rufnummern (21...) als auch für externe
+Rufnummern können Aliase (Namen) vergeben werden. Falls Namen auch
+für externe Nummern vergeben werden sollen ist eine separate Datei
+für diese Aliase zwingend notwendig, sollen nur für die eigenen
+Apparate Namen vergeben werden, so kann das auch in der ini Datei
+geschehen.
+
+Da ESTIC sowohl bei den Kurzwahlen, als auch bei ein- und ausgehenden
+Rufen wenn möglich die Aliase mit ausgibt empfiehlt es sich, für
+oft verwendete Nummern Aliase anzulegen.
+
+Einige Erläuterungen dazu finden sich in der Datei estic.ini, die
+Beispieldatei mit Aliasen (alias.dat) enthält Erklärungen zum Format
+der Datei und einige Beispiel.
+
+
+4.5 Debug-Log
+-------------
+
+Um Problemen bei der Kommunikation auf die Spur zu kommen, kann ESTIC
+ein Logfile mit einem kompletten Trace der Kommunikation zwischen PC
+und ISTEC erzeugen. Achtung: Wenn ESTIC dauernd läuft, dann kann
+dieses File recht groß werden.
+
+Die bereits recht sprechenden Einträge wurden für die Version 1.40
+nochmals erweitert. Ab dieser Version enthält jeder Eintrag nicht nur
+die versandten Daten, sondern auch eine Beschreibung der Nachricht als
+Text. Wer sich für die Kommunikationsschnittstelle der Istec interessiert,
+dem sei die Lektüre des Debug-Logs ans Herz gelegt :-)
+
+Wie das Logging eingeschaltet wird steht in der Datei estic.ini.
+
+
+4.6 ISDN4Linux Monitor
+----------------------
+
+Unter Linux ist es möglich, sich den aktuellen Zustand der von
+ISDN4Linux verwalteten ISDN-Kanäle anzeigen zu lassen. Dazu existiert
+ein eigenes Monitorfenster.
+
+
+4.7. Die AreaCode Datenbank
+---------------------------
+
+ESTIC verwendet ab Version 1.5 eine Datenbank, die alle Vorwahlen für
+Deutschland und die Schweiz enthält (für Österreich wurden mir auch
+Nummern versprochen, ich habe bisher jedoch nichts erhalten). Dadurch
+kann bei der Anzeige von Rufnummern ein Trenner zwischen Vorwahl und
+eigentlicher Rufnummer eingefügt werden. Bei eingehenden Rufen (erst
+mit Firmware > 2.0 verfügbar) kann außerdem das Ortsnetz angezeigt
+werden, von dem der Anruf kam. Weiterhin sind in bestimmten Situationen
+Fehlerprüfungen möglich (bisher aber nirgendwo genutzt).
+
+Die angesprochene Datenbank besteht aus einem in C geschriebenen Modul
+sowie den eigentlichen Daten. Das Modul liegt im Quellcode vor und
+darf nach Belieben (auch kommerziell) eingesetzt werden. Den Quellcode
+und mehr dazu gibt es unter ftp://ftp.musoftware.com/areacode/.
+
+
+
+5. Installation & Aufruf
+------------------------
+
+ESTIC benötigt zum Laufen die Datei estic.res, entweder
+
+  * im Verzeichnis, in dem sich estic.exe befindet, oder
+  * im aktuellen Verzeichnis, oder
+  * in einem Verzeichnis, das sich in PATH bzw. DPATH (OS/2)
+    befindet.
+
+ESTIC versteht beim Aufruf einige Kommandozeilen-Parameter:
+
+  -a	    DOS: Adresse des UARTs, falls kein Standard-Port
+	    verwendet wird. Diese Angabe ist normalerweise
+	    nicht notwendig. Default ist 0x3F8 für COM1,
+	    0x3F8 für COM2, 0x3E8 für COM3, 0x2E8 für COM4.
+
+  -i	    DOS: Vom UART verwendeter Interrupt, falls keine
+	    Standard-Belegung verwendet wird. Diese Angabe
+	    ist normalerweise nicht notwendig. Default ist
+	    0x0C für COM1, 0x0B für COM2, 0x0C für COM3 und
+	    0x0B für COM4.
+
+  -n	    ISTEC nicht vorhanden, nur Parameter editieren.
+
+  -pPORT    PORT kann eine Ziffer, die vollständige Angabe
+	    "COMx", oder ein anderes serielles Device sein.
+	    Unter Linux wird automatisch /dev/ vorangestellt,
+	    wenn der Name kein Verzeichnis enthält. Da der
+	    Default (COM2) unter Linux kein vernünftiges Device
+	    darstellt, muß unter Linux entweder eine estic.ini
+	    Datei erstellt (s.u.) oder der Parameter -p verwendet
+	    werden.
+
+Alle anderen Parameter werden ohne Fehlermeldung ignoriert!
+
+Diverse Vorgaben für ESTIC können in der Datei estic.ini eingestellt
+werden. Eine Beispieldatei ist vorhanden und sollte auf jeden Fall den
+lokalen Gegebenheiten angepasst werden. Siehe extra Abschnitt.
+
+
+
+6. Die Datei estic.ini
+----------------------
+
+Nachdem die Anzahl der einstellbaren Programm-Optionen seit der
+letzten Version rapide zugenommen hat, ist die Datei estic.ini
+wichtiger denn je. In der mitgelieferten Beispiel-Datei finden sich
+genauere Erläuterungen, was eingestellt werden muß/sollte/kann.
+
+Trotzdem hier ein kurzer Überlick:
+
+  * Verwendeter COM-Port
+  * Basisadresse, IRQ usw. (für DOS)
+  * Einstellungen für den Ausdruck
+  * Namen der Logfiles
+  * Aliase für die einzelnen Nummer (21 = "Büro" usw.)
+  * Name der externen Aliasdatei falls gewünscht.
+
+Es ist vor dem ersten Betrieb UNBEDINGT notwendig diese Datei
+durchzusehen und zu editieren!
+
+
+
+7. Tasten
+----------
+
+Die meisten Tastenkombinationen werden unten in der Statuszeile oder in
+den Menues angezeigt. Die einzigen Tasten, bei denen das nicht der Fall
+ist sind diejenigen zum Aktivieren von Fenstern: Alle Fenster, die
+rechts oben eine Ziffer zwischen 1 und 9 anzeigen können mittels Alt+<n>
+aktiviert werden, wobei <n> die angezeigte Ziffer ist.
+Alternativ kann Alt+0 zur Anzeige der Fensterliste verwendet werden über
+die das jeweilige Fenster dann ausgewählt werden kann.
+
+
+
+8. Betrieb unter den verschiedenen Plattformen
+----------------------------------------------
+
+8.1 DOS
+-------
+
+Die DOS Version von ESTIC ist ein 32-bit Programm, das unter dem
+DOS4GW Extender läuft. Benötigt wird deshalb als Minimum ein 80386.
+Der Betrieb unter Windows ist problematisch, in den DOS Boxen von
+OS/2 läuft die DOS Version problemlos.
+
+Ich habe auf ftp://linux01.gwdg.de/pub/isdn/estic noch den früher
+verwendeten DOS Extender PMODE/W abgelegt. Wer Probleme hat, der
+kann sich diese Datei besorgen. Sie enthält - außer dem Extender
+selber - auch ein Programm, um den DOS4GW Extender gegen PMODE/W
+auszutauschen.
+
+PMODE/W braucht weniger Speicher und ist geringfügig schneller,
+deshalb lohnt sich ein Versuch z.B. für DOS Rechner mit nur 2MB
+Speicher, auf denen ESTIC mit DOS4GW oft nicht läuft.
+
+Andererseits hat PMODE/W Probleme an anderen Stellen, so kann
+es mit PMODE/W z.B. passieren, daß ESTIC bei zu wenig Speicher
+einfach abschmiert - nicht weil ESTIC das nicht erkennen würde,
+sondern weil PMODE/W diese Bedingung nicht korrekt behandelt.
+
+
+8.2 OS/2
+--------
+
+Die OS/2 Version ist ein 32-bit Programm, das ab Version 2.0 aufwärts
+läuft.
+
+
+8.3 Windows-NT
+--------------
+
+Michael Peschel (mipe@ibb.schwaben.com) hat spunk auf Windows-NT
+portiert, deshalb gibt es ab der Version 1.40 von ESTIC auch eine
+Windows-NT Version.
+
+ESTIC ist auch unter Windows-NT ein Textmodus Programm!
+
+Unter Windows-NT werden im Fullscreen-Modus zur Zeit keine anderen
+Auflösungen als 80x25 unterstützt. Im Grafikmodus kann das Fenster
+(fast) beliebig in der Größe verändert werden.
+
+
+8.4 Linux, FreeBSD und andere Unixe
+-----------------------------------
+
+Durch die Vielzahl möglicher Terminaltypen ist die Installation leider
+nicht ganz so einfach wie unter DOS & OS/2 (aber auch nicht wesentlich
+komlexer).
+
+Völlig ohne Einstellungen kommt ESTIC beim Betrieb auf der Console
+aus. Bei Terminals muß u.U. der Zeichensatz eingestellt werden.
+Im Gegensatz zu früheren Versionen ist die Default-Sprache von ESTIC
+jetzt auch unter FreeBSD und Linux deutsch, es sind also keine
+weiteren Einstellungen für die Sprache notwendig.
+
+Einstellungen für die Ein-/Ausgabe sowie der Betrieb in Farbe:
+
+    SPUNK_COLOR     Mögliche Werte: "yes", "no", "1", "0". Bestimmt
+		    ob ESTIC bei der Ausgabe Farben verwendet. ESTIC
+		    verwendet ohne die Angabe Farben auf der Console,
+		    aber nicht auf sonstigen Terminals.
+    SPUNK_CP437     Gibt an, ob das Ausgabegerät die IBM Codepage 437
+		    unterstützt. Mögliche Werte: "yes", "no", "1",
+		    "0". Wird die Codepage 437 unterstützt, dann
+		    wird PC-kompatible Liniengrafik anstelle von +|-
+		    verwendet.
+		    Diese Einstellung ist bei Verwendung eines PC-
+		    Terminalprogramms sinnvoll.
+
+Tastenbelegung unter Linux und FreeBSD:
+ESTIC verwendet soweit möglich dieselbe Tastenbelegung wie unter DOS &
+OS/2. Für den Fall, daß Tasten auf dem jeweiligen Terminal nicht
+existieren gibt es Ersatz-Codes. Diese werden dann in der Statuszeile
+anstelle der normalen Tastenbelegungen angezeigt.
+
+Damit das funktioniert ist es aber wichtig, daß das Terminal richtig
+gesetzt ist. Wer sich z.B. per Modem auf seinem Linux-Rechner ein-
+wählt darf nicht nur das Terminalprogramm auf 'vt100' einstellen,
+sondern muß auch die TERM Environment Variable korrekt auf 'vt100'
+setzen. Steht diese anstelle von 'vt100' auf 'console', dann entnimmt
+ESTIC dem Termcap-Eintrag, daß die Funktionstasten F1-F10 verfügbar
+sind - und verwendet diese auch! Die Folge ist, daß Änderungen mit F10
+bestätigt werden müssen - und F10 ist bei einer echten vt100 Emulation
+nicht vorhanden.
+
+Leider sind einige von ESTIC verwendete Tasten unter Linux nur mit
+großen Problemen verfügbar. Stattdessen existieren Ersatztasten, die
+aber nicht so eingängig sind. Die Ersatztasten sind
+
+    Aktion		Orginal		Ersatz		auf Terminals
+    ------------------------------------------------------------------
+    Schließen		Alt-F3		Alt+Ctrl+C	Esc-Ctrl+C
+    Resize		Ctrl-F5		Alt+Ctrl+R	Esc-Ctrl+R
+    Resize-Up		Ctrl-Up		Ctrl-W		Ctrl-W
+    Resize-Down		Ctrl-Down	Ctrl-Z		Ctrl-Z
+    Resize-Left		Ctrl-Left	Ctrl-A		Ctrl-A
+    Resize-Right	Ctrl-Right	Ctrl-F		Ctrl-F
+    Move-Up		Cursor-Up	Cursor-Up	Ctrl-E
+    Move-Down		Cursor-Down	Cursor-Down	Ctrl-X
+    Move-Left		Cursor-Left	Cursor-Left	Ctrl-S
+    Move-Right		Cursor-Right	Cursor-Right	Ctrl-D
+
+ACHTUNG: Das gilt nur für die Textmode-Versionen von ESTIC. Unter X sind
+	 (nach korrekter Installation) praktisch durchgängig die unter
+	 "Orginal" aufgeführten Tasten vorhanden.
+
+Umlaute:
+Wird die Codepage 437 verwendet (wie auf der Console), dann werden
+Umlaute immer korrekt dargestellt. Bei Terminals, die den ISO-8859-1
+Zeichensatz verstehen, sollte die Variable LC_CTYPE auf den Wert
+"iso_8859_1" gesetzt werden. ESTIC verwendet dann die entsprechenden
+Codierungen für die deutschen Umlaute.
+
+Und noch ein Tip:
+Wer einen Termcap-Eintrag für Minicom hat, kann auch bei einer
+Telnet-Session von einem Linux-PC auf einen anderen Farben und
+Liniengrafik verwenden. Beispiel-Session:
+
+	uz@moppi:~$ rlogin wuschel
+	uz@wuschel:~$ export TERM=mc
+	uz@wuschel:~$ export SPUNK_COLOR=yes
+	uz@wuschel:~$ export SPUNK_CP437=yes
+	uz@wuschel:~$ estic
+
+Es macht natürlich Sinn, obige Einstellungen in Abhängigkeit vom
+Login-Terminal in .profile zu verewigen.
+
+Areacode Datenfile:
+Es macht u.U. Sinn, das areacode Datenfile als /usr/lib/areacodes
+systemweit zu installieren. Ich wollte eigentlich eine eigene
+Installationsroutine dafür schreiben (die Datenfiles haben einen
+Build-Stempel, wodurch sichergestellt werden kann, dass kein neues
+durch ein älteres File überschrieben wird), bin jedoch sowieso
+mehrere Monate hinter meinem Zeitplan her und habe gerade einfach
+keine Lust mehr :-(
+Unter Linux verwendet das neue isdnlog (frag mich bloss gerade
+keiner nach der Version, irgendwas > 2.5) auch dieses Datenfile,
+d.h. wer es in /usr/lib installiert braucht es nur einmal.
+
+
+8.5 X Window System
+-------------------
+
+Für Linux und FreeBSD gibt es auch eine X Version von ESTIC. Das
+spunk X Backend hat derzeit noch ein paar Einschränkungen. Es folgen
+einige Hinweise zum Verhalten/Betrieb.
+
+  * Das Executable trägt als einziges den Namen xestic, damit es
+    neben einem "normalen" estic her existieren kann. Der Name der
+    Resource- und INI-Files ändert sich nicht.
+
+  * Das X Backend von spunk wertet zwei Environment-Variablen aus,
+    -display und -geometry. Weitere, X-spezifische Parameter existieren
+    nicht. Eine der nächsten Versionen wird dahingehend erweitert
+    werden, daß sich das X Backend Größe und Position des Fensters
+    selber merkt - dann wird das unsägliche -geometry überflüssig.
+
+  * Die Fenstergröße kann zwischen 80*25 und 100*50 stufenlos
+    eingestellt werden.
+
+  * Auf Workstations mit mehr als 4 Farbplanes (> 16 Farben) wird
+    ein Display mit 16 Farben für den Text emuliert. Sind weniger
+    Farbebenen, aber mehr als eine vorhanden, dann wird ein Display
+    mit 3 Farbstufen (schwarz/grau/weiß) emuliert. Auf monochromen
+    Servern erfolgt die Ausgabe in schwarz/weiß. Der Versuch einer
+    Ausgabe mit 16 Farben läßt sich durch Setzen von
+
+	SPUNK_COLOR=yes
+
+    erzwingen, dürfte bei einem 16-Farb Server aber nicht sehr hübsch
+    aussehen (habe ich nicht probiert).
+
+  * Spunk sucht nach den folgenden Fonts in der angegebenen Reihenfolge:
+
+	vga
+	fixed
+	8x13
+
+    Der vga Font ist auf Linux-Systemen normalerweise vorhanden, weil
+    er von DOSEMU verwendet wird. Mit diesem Font kann die Codepage 437,
+    d.h. Liniengrafik verwendet werden. Ist keiner der oben angegebenen
+    Fonts vorhanden, oder soll ein anderer Font verwendet werden, dann
+    kann mit
+
+	SPUNK_XFONT=<fontname>
+
+    auf einen anderen Font umgeschaltet werden. Es muß sich dabei um
+    einen Fixed Font handeln! Spunk nimmt bei Fonts, deren Namen nicht
+    mit "VGA" anfängt an, daß es sich um ISO-8859-1 Fonts handelt und
+    setzt die Ausgabe entsprechend um. Trotzdem wird die Verwendung
+    des VGA Fonts dringend empfohlen (sieht _viel_ hübscher aus).
+
+  * Die graue und monochrome Anzeige können mit
+
+	SPUNK_XINVERTMONO=yes
+
+    invertiert werden. Das kann vor allem bei der monochromen Anzeige
+    sinnvoll sein.
+
+  * Spunk verwendet mod4 für die linke Alt-Taste. Das ist - falls
+    notwendig - entsprechend anzupassen.
+
+  * Manche Linux-Systeme schalten die rechte und linke Alt-Taste
+    parallel (mod5). Das ist dann der Fall, wenn die sonst nur mit
+    der Alt-Gr Taste erreichbaren Zeichen (z.B. '@') auch mit der
+    linken Alt-Taste erzeugt werden können. Spunk kann in dem Fall
+    bestimmte Alt-Kombinationen nicht erkennen, es empfiehlt sich
+    das Abschalten dieses Features, bei mir war dazu die Eingabe
+    von
+
+	xmodmap -e "remove mod5 = Alt_L"
+
+    notwendig.
+
+  * Window-Manager haben die unangenehme Eigenschaft, sich recht
+    viele Tasten für irgendwelche Hotkeys zu belegen. Diese Tasten
+    stehen für spunk nicht mehr zur Verfügung (das gilt z.B. für
+    fvwm und die Cursor Keys zusammen mit allen(!) Modifier Tasten).
+    Wen das stört, der sollte entweder seinem Window-Manager andere
+    Tastenkombinationen beibringen, oder die Ersatzcodes von spunk
+    verwenden (siehe weiter oben, oder auch spunk/xsrc/console.cc).
+
+  * Und bevor ich's vergesse: Maus-Bedienung ist nicht möglich, da
+    spunk derzeit keine Mäuse unterstützt.
+
+
+
+9. Andere Sprachen
+------------------
+
+Derzeit unterstützt ESTIC die Sprachen Deutsch und Englisch. Unter
+Linux/FreeBSD ist der Default Deutsch, unter OS/2 und DOS wird die
+aktuelle Landeseinstellung ausgewertet. Falls das eingestellte Land
+nicht unterstützt wird ist der Default USA/Englisch.
+
+Land/Sprache läßt sich durch Setzen von Environment-Variablen
+beeinflussen:
+
+	set SPUNK_LANGUAGE=<Sprachcode>
+	set SPUNK_COUNTRY=<Landescode>
+
+Unter Linux & FreeBSD gehört jeweils eine entsprechende "export"-
+Anweisung für die Variable dazu.
+
+Verfügbare Ländercodes (falls die dazugehörige Sprache nicht verfügbar
+ist wird zumindest die Zeit/Datumsdarstellung umgeschaltet):
+
+	001	USA
+	031	Niederlande
+	039	Italien
+	041	Schweiz
+	044	England
+	049	Deutschland
+
+Verfügbare Sprachen (für ESTIC)
+
+	1	Deutsch
+	2	Englisch
+
+Übersetzungen in weitere Sprachen sind möglich, ohne die ausführbare
+Datei zu ändern (Erweiterung von estic.res). Da sich meine Fremdsprachen-
+kenntnisse auf Englisch und etwas (unnützes) Latein beschränken, würde
+ich mich freuen, wenn mir jemand bei der Übersetzung in andere Sprachen
+behilflich ist.
+
+
+
+10. Bekannte Fehler und Unzulänglichkeiten
+------------------------------------------
+
+Folgende Fehler/Unzulänglichkeiten sind in der aktuellen Version bereits
+bekannt:
+
+  * Gespräche, die intern weitervermittelt wurden (oder bei denen eine
+    Weitervermittlung versucht wurde) werden nicht korrekt protokolliert
+    (die angegebene Anzahl Einheiten ist fehlerhaft). Das könnte auch
+    bei gemakelten Gesprächen so sein, habe ich nicht probiert.
+
+  * Die Istec schaltet ab und zu ohne weiteren Grund den Diagnose-Modus ab
+    und ignoriert dann weitere Befehle zum Einschalten desselben. Deshalb
+    passiert es leider, daß bei dauernd laufendem ESTIC ab und zu die
+    Erfassung der Gespräche ausfällt. Das ist ein Bug der Istec Firmware
+    gegen den ich leider machtlos bin. Dieser Fehler ist - soweit ich das
+    prüfen konnte - ab Firmware 1.95 behoben.
+
+  * Unter bestimmten Bedingungen zerstört sich ESTIC selber das Settings-
+    File. Symptom dafür sind Access-Violations oder Core-Dumps direkt
+    beim Start. Manchmal erscheint auch eine Fehlermeldung "Internal
+    error: Call to abstract method".
+    Das passiert dann, wenn entweder zwei Kopien von ESTIC in
+    verschiedenen Sessions gestartet werden, oder wenn der Rechner
+    heruntergefahren wird, ohne ESTIC korrekt zu beenden.
+    Abhilfe ist möglich durch Löschen des Settings-Files (estic.rc
+    unter DOS, OS/2 & NT, ~/.esticrc unter *nix).
+
+  * Die Behandlung von internationalen Rufnummern ist praktisch überhaupt
+    nicht getestet (u.a. weil's nicht ganz billig ist :-). Das betrifft
+    vor allem das Einfügen von Trennzeichen (wenn die areacode Datenbank
+    vorhanden ist, dann kann ESTIC einen Trenner zwischen Vorwahl und
+    eigentlicher Rufnummer einfügen).
+
+  * Die Tag-/Nachtumschaltung der Firmware 2.0 ist nicht implementiert.
+
+  * Die Version 2.0 der Firmware kann eigentlich die Rufumleitung von
+    verschiedenen Bedingungen abhängig machen. Bei meiner Beta Firmware
+    war dieses Feature fehlerhaft. Weil ich deshalb überhaupt nichts
+    testen konnte habe ich alles diesbezügliche aus der Geräte-
+    konfiguration rausgelassen.
+
+Noch etwas, das man - je nach Sichtweise - unter "Unzulänglichkeit" oder
+"Feature" einordnen kann:
+
+  * Die mit der Firmware 2.0 hinzugekommenen Kurzwahlnummern sind von der
+    Konfiguration her eine mittlere Katastrophe. So kann für jeden
+    einzelnen Speicherplatz eingestellt werden,
+
+      - ob die Nummer für bestimmte Endgeräte auf "Babyruf" (Direktwahl
+	nach Abheben) konfiguriert werden soll,
+
+      - gleichzeitig(!) kann die Nummer als Kurzwahl für andere oder
+	dasselbe Gerät dienen (was im Falle der Anwahl desselben Gerätes
+	passiert wissen wohl nur die Götter),
+
+      - wahlweise kann die Nummer aber auch als Sperre geschaltet werden
+	(unabhängig davon, ob sie als Babyruf Verwendung findet),
+
+      - und weiterhin kann für die festgelegte Nummern noch ein
+	Klingelsignal ausgewählt werden, d.h. die Nummer wird dann nicht
+	bei ausgehenden, sondern bei eingehenden Rufen ausgewertet, und
+	zwar unabhängig von der Einstellung bei ausgehendem Ruf oder
+	Babyruf. Dabei sind die festgelegten Endgeräte unerheblich, das
+	Klingelsignal gilt für alle Endgeräte.
+
+      - Wenn die Nummer als Sperre konfiguriert ist, dann sind auch
+	unvollständige Nummern zulässig.
+
+      - Die Nummer braucht, wenn sie als Kurzwahl konfiguriert ist (im
+	Gegensatz zu der Nummer, die bei einer Rufumleitung angegeben wird)
+	die Amts-Null. Da bei einkommenden Rufen damit auch das
+	Klingelsignal eingestellt wird, wird die führende 0 anscheinend
+	von der Firmware entfernt, ausserdem braucht die Erkennung für
+	einkommende Anrufe immer die Vorwahl. Das wiederum kann zu Problemen
+	führen, wenn die Nummer als Sperre definiert ist, hier ist die
+	tatsächlich gewählte Nummer interessant, nicht die komplette Nummer
+	mit Vorwahl, wie sie für die Erkennung eingehender Rufe benötigt
+	wird. Was wiederum bedeutet, dass eine Nummer, die gesperrt
+	werden soll, mehrfach eingetragen werden muß: Einmal ohne Vorwahl
+	einmal mit Vorwahl, und vermutlich sogar nochmal mit Landes-
+	kennung.
+
+    Wer das jetzt nicht ganz verstanden hat braucht sich keine Sorgen
+    machen, ich habe mehr als eine Stunde gebraucht um das alles zu
+    testen und alle Details zu durchschauen.
+
+    Da das nicht nur für den Benutzer, sondern noch viel mehr software-
+    technisch eine Katastrophe darstellt habe ich das Verhalten etwas
+    modifiziert, auch wenn dadurch Kombinationsmöglichkeiten bei der
+    Konfiguration verloren gehen:
+
+    Einem Speicherplatz im Kurzwahlspeicher kann eine Nummer, sowie
+    für ausgehende Rufe ein Verwendungszweck zugeordnet werden.
+    Dieser Verwendungszweck ist eines der folgenden:
+
+      o Babyruf
+      o Kurzwahl
+      o Sperre
+
+    Weiterhin kann für eingehende Rufe derselben Nummer noch das
+    Klingelsignal festgelegt werden.
+
+    Das bedeutet zwar gegenüber dem Konfigurationsprogramm vom Emmerich
+    eine geradezu verschwenderischen Umgang mit den Kurzwahlspeichern
+    (ESTIC braucht zum Teil 2 Einträge für denselben Zweck wie das
+    Konfigurationsprogramm von Emmerich), andererseits sind 60 Plätze
+    eine ganze Menge, und der Vorteil, daß die Features dadurch erst
+    bedienbar werden ist nicht zu unterschätzen. Außerdem kann ESTIC
+    dadurch auf Fehler prüfen, weil die Rahmenbedingungen eingeengt
+    werden.
+
+    Weiterhin wird die Tatsache, dass die Istec Firmware eine führende
+    '0' vor der eigentlichen Nummer braucht, vor dem Benutzer versteckt.
+    ESTIC entfernt diese Ziffer beim Laden und fügt sie vor dem
+    Speichern wieder an. Wenn die areacode Datenbank verfügbar ist,
+    dann wird automatisch ein Trenner zwischen Vorwahl und eigentlicher
+    Nummer eingefügt.
+
+    ACHTUNG: ESTIC passt die Kurzwahlen beim Laden an obige
+    Einschränkungen an. Damit werden aber per ISTEC.EXE eingestellte
+    Kurzwahlnummern verändert. Das ist solange unkritisch, wie die
+    Nummern nicht in die Anlage zurückgespeichert werden.
+    Die einfachste Lösung ist, entweder nur ESTIC zu verwenden, oder
+    auch unter ISTEC.EXE nicht mehrfache Features auf eine Kurzwahl
+    zu legen.
+
+
+
+11. Andere ISTEC Anlagen
+------------------------
+
+Aufgrund der geringen Anzahl von Rückmeldungen, zusammen mit der
+Tatsache, daß ESTIC sowieso immer komplexer wird, weil immer mehr
+verschiedene Firmware-Versionen unterstützt werden müssen, habe ich
+beschlossen, in Zukunft bei der Programmierung ohne Rücksicht auf
+andere Emmerich Anlagen vorzugehen.
+
+ESTIC war ursprünglich für die Unterstützung von anderen Anlagen
+vorbereitet. Ich werde diese Unterstützung (soweit sie nach außen hin
+sichbar ist) soweit wie möglich für eine der nächsten Versionen
+entfernen.
+
+
+
+12. Programmiertechnisches
+--------------------------
+
+Ich werde ab der Version 1.30 von ESTIC nur noch Binaries für DOS, OS/2
+und Linux bereitstellen, weil ich nur diese auch wirklich testen kann.
+Trotzdem fände ich es sehr sinnvoll, wenn es für möglichst viele
+Plattformen Binaries gäbe. Es gibt eine Menge Leute (vor allem im Unix-
+Bereich) die prinzipiell alles selber übersetzt haben müssen. Eine sehr
+große Anzahl von Benutzern weiß aber offenbar auch vorcompilierte
+Versionen zu schätzen - zudem ist das für den Anwender, der keine Lust
+oder Zeit hat, sich mit 5 verschiedenen Compiler-Versionen rumzuschlagen
+eine sehr bequeme Lösung.
+
+Wer also zur ersten Gruppe der "Selber-Übersetzer" gehört, und dem Rest
+der Welt einen Gefallen tun will, der kann mir (nach Rückfrage!) das
+entsprechende Binary zusenden, ich werde es auf die entsprechenden
+Server legen oder legen lassen.
+
+Speziell für die etwas selteneren Unix-Varianten gilt: Ports machen nur
+dann Sinn, wenn der Port aktiv in Benutzung ist und von jemand anderem
+gewartet wird. Das ist derzeit nur für FreeBSD der Fall, hier gibt es
+(dank Julian H. Stacey, jhs@freebsd.org) inzwischen eine Version von
+ESTIC die in den offiziellen FreeBSD Baum integriert ist. Alle anderen
+Unix-Versionen (mit Ausnahme von Linux) sind von mir ab sofort auf Eis
+gelegt, bis sich jemand findet, der sie auch wartet.
+
+
+12.1 Allgemeines
+----------------
+
+Das Modul icei.cc (EI = External Interface) ist dafür gedacht, ohne
+großen Aufwand eigene Erweiterungen in ESTIC einzubauen. Alle
+Gesprächsdaten werden intern über Messages weitergeleitet. Im Modul
+icei befindet sich ein Objekt, das jede Message empfängt. Die
+entsprechende Case-Struktur muß nur noch um eigenen Code zur
+Verarbeitung der Message mit den Gesprächsdaten erweitert werden.
+
+Wer also ESTIC schon immer mal erweitern wollte, vor der Komplexität
+von spunk aber zurückgeschreckt ist hat hier die Möglichkeit, recht
+einfach eigene Ideen auszuprobieren.
+
+
+12.2 FreeBSD
+------------
+
+Für FreeBSD gibt es einen "offiziellen" Port von Julian H. Stacy
+(jhs@freebsd.org).
+
+
+12.3 Linux
+----------
+
+Das a.out Format wird nicht mehr unterstützt.
+
+
+12.4 Unix-Systeme
+-----------------
+
+Ports auf bisher nicht unterstützte Unix-System sollten kein allzu
+großes Problem sein. Am einfachsten ist der Port der X-Version, für
+die Textmodus-Version wird zwingend Termcap benötigt, das nicht auf
+allen Maschinen vorhanden ist.
+Das Define GENERIC_UNIX ist ein guter Startpunkt für andere Unix-
+Versionen.
+
+Siehe auch den Abschnitt weiter oben (Wartung der Ports).
+
+
+12.5 DOS und OS/2, NT
+---------------------
+
+Die Version ist mit dem Watcom Compiler übersetzt, braucht aber das
+Borland-Make! Das liegt daran, daß das Watcom Make etwas komisch und
+das (mir vorliegende) GNU Make buggy ist (nur die OS/2 Version).
+
+
+
+13. Nutzungsbestimmungen und Weitergabe
+---------------------------------------
+
+Die Software (sowohl die Quellcodes, als auch die Binaries) werden ohne
+jegliche Zusagen/Garantien bezüglich Funktionalität oder Funktionsfähigkeit
+abgegeben. Weder die Autoren noch die Distributoren übernehmen eine
+Verantwortung für Schäden, die durch die Benutzung der Software verursacht
+werden.
+
+Die Software darf frei verwendet und weitergegeben werden, wobei "frei"
+ausdrücklich auch eine kommerzielle Nutzung/Weitergabe einschließt,
+*vorausgesetzt* die folgenden Bedingungen werden eingehalten:
+
+  1. Die Herkunft der Software muß - wenn überhaupt - dann korrekt
+     angegeben werden. Es ist nicht erlaubt, die Software als Werk
+     eines anderen auszugeben. Wird die Software in Teilen oder als
+     Ganzes in einem Produkt benutzt, dann würde ich mich über einen
+     Hinweis auf die Herkunft in der Dokumentation freuen. Ein solcher
+     Hinweis ist aber nicht zwingend notwendig.
+
+  2. Geänderte Quellcodes müssen deutlich als solche gekennzeichnet
+     werden und dürfen nicht ohne einen expliziten Hinweis auf die
+     durchgeführten Änderungen weiterverteilt werden.
+
+  3. Die Bedingungen über die Nutzung/Weitergabe dürfen nicht entfernt
+     oder geändert werden.
+
+
+Speziell für ESTIC gilt noch der folgende Hinweis:
+
+  * Die Bestimmungen des Datenschutzes sind zu beachten! Das
+    Logging-Feature kann speziell bei Anwendung im kommerziellen
+    Bereich gegen Datenschutzbestimmungen verstoßen!
+
+
+
+14. Verfügbarkeit
+-----------------
+
+
+14.1 Namensgebung der Files
+---------------------------
+
+Ich bin von der alten esXXXyyy Namensgebung abgekommen, weil man die
+vielen Versionen praktisch nicht mehr auseinanderhalten konnte.
+Stattdessen werden sprechende Namen im Format
+
+	estic-1.30-linux-386-aout-x.zip
+
+verwendet. Mit diesen Namen braucht es hoffentlich keine "Übersetzungs-
+Tabelle" mehr :-)
+
+
+
+14.2 Modem-Login auf wuschel.ibb.schwaben.com
+---------------------------------------------
+
+Zugriff auf die ESTIC Files gibt es über zwei Logins auf meinem
+Linux-Rechner.
+
+    Telefon:	    0711/7676185
+    Login:	    sauger
+    Passwort:	    sauger
+    Verzeichnis:    /pub/ESTIC
+
+Dieser Zugang ist interaktiv, d.h. wer sich mit der o.g. Kennung
+einloggt bekommt eine ganz normale Unix-Shell. Da das für viele
+ein echtes Problem zu sein scheint (die Logfiles können einen
+manchmal wirklich schaudern machen), gibt es auch einen nicht-
+interaktiven Login, über den die Files per Menue-Auswahl angeboten
+werden:
+
+    Telefon:	    0711/7676185
+    Login:	    estic
+
+Der ISDN Login unter derselben Nummer wurde wegen Problemen mit der
+verwendeten ISDN Software bis auf weiteres abgeschaltet.
+
+
+
+14.3 FTP-Sites
+--------------
+
+ESTIC ist auf folgenden FTP Sites verfügbar:
+
+	ftp://ftp.gwdg.de/pub/misc/isdn/linux/estic/
+	ftp://ftp.franken.de/pub/isdn4linux/estic/	(1)
+	ftp://ftp.musoftware.com/pub/estic/
+
+(1) Das isdn4linux Verzeichnis auf franken.de wird von diversen anderen
+    ftp Servern gespiegelt. ESTIC sollte auch auf allen Mirror-Sites
+    verfügbar sein.
+
+Ich habe keinen Zugang mehr auf ftp.seicom.net, was dort herumliegt sind
+alte Versionen, die ich - mangels Zugriff - auch nicht löschen kann.
+
+
+14.4 WWW-Sites
+--------------
+
+Neben dem Zugriff über die ESTIC Homepage (s.u.) ist ESTIC auch über die
+Web Page von Uli Mittermaier zu beziehen:
+
+	http://www.fast.de/~uli/isdn
+
+
+
+15. ESTIC Web-Page
+------------------
+
+ESTIC hat seit einiger Zeit auch eine Home-Page im WWW. Dort finden
+sich  allgemeine Infos zu ESTIC und zur ISTEC, die ESTIC-FAQ, Ausblicke
+auf neue Versionen, Informationen zur Klassenbibliothek spunk (s.u.),
+Links auf die aktuellen Binaries, sowie auf weitere Sites mit
+ergänzenden Informationen.
+
+Für die Web-Page hätte ich noch Interesse an weiteren Links, speziell
+Bezugsmöglichkeiten (über's Internet) von anderen ISTEC Konfigurations-
+programmen.
+
+Die URL der ESTIC Home-Page: http://www.musoftware.com/estic/
+
+
+
+16. Bug-Reports
+---------------
+
+Bug-Reports bitte mit einer _genauen_ Beschreibung unter Angabe des
+Betriebssystems, ESTIC-Version und ISTEC Firmware-Version. Falls es
+sich um Kommunikationsfehler handelt, bitte die relevanten Teile (und
+nur diese!) des Debug-Logs mitschicken.
+
+Fehler-Reports bekomme ich am liebsten per Mail MIT GÜLTIGER ABSENDER-
+ADRESSE (warum ich das wohl groß schreibe?). Wer unbedingt meint,
+mir ein Fax schicken zu müssen, der soll wenigstens dafür sorgen, daß
+sein eigenes Fax korrekt konfiguriert ist! Ich habe mir mehrfach die
+Mühe gemacht, auf solche Faxe zu antworten, meine Antwortfaxe sind
+aber nie angekommen (mit an Sicherheit grenzender Wahrscheinlichkeit
+wegen einer falsch eingestellten Dienste-Kennung). Wer also seinen
+Fax-Anschluß nicht auf "Fax" konfiguriert hat, kann sich einen Fehler-
+Rapport per Fax sparen oder braucht zumindest keine Antwort zu
+erwarten (sorry, aber sowas ist _ziemlich_ nervig!).
+
+
+
+17. Anmerkung zu SPUNK
+----------------------
+
+SPUNK ist eine C++ Klassenbibliothek für Textmodus Applikationen.
+Neben den Klassen/Funktionen für die Oberfläche enthält SPUNK noch
+viele weitere allgemein anwendbare Routinen (Klassen für Strings,
+Listen etc). SPUNK implementiert persistente Objekte - alle Menues,
+Strings usw. sind persistent, sie werden interaktiv über einen
+Resourcen-Editor erstellt und zur Laufzeit aus einem Resourcen-File
+geladen. Der Vorteil ist kürzerer Code, einfache Möglichkeit der
+Übersetzung in andere Sprachen und die Möglichkeit, alle Resourcen
+interaktiv zu erstellen.
+SPUNK ist (relativ) portabel, für eine Portierung müssen nur wenige
+systemabhängige Module neu geschrieben, sowie einige Header-Files
+angepasst werden.
+SPUNK ist derzeit verfügbar für DOS (16 und 32-Bit mit Extender), OS/2,
+Linux (das sind die Betriebssysteme, die ich hier am laufen habe),
+für Windows-NT, FreeBSD und diverse andere Unixe verfügbar.
+
+Ich würde SPUNK gerne auf mehr Plattformen portieren. Wenn mir jemand
+dabei behilflich sein kann und will, bitte kurze Mail an mich.
+
+
+
+18. Danksagungen
+----------------
+
+Bei der Entwicklung von ESTIC haben mir eine Menge Leute direkt oder
+indirekt geholfen. Leider habe ich in den vorigen Versionen nur einen
+Teil dieser Leute namentlich erwähnt. Hier also eine etwas komplettere
+Liste (die aber leider immer noch unvollständig ist):
+
+Mein Dank geht an:
+
+  Hergen Lehmann (HERGEN_LEHMANN@TBX.BerliNet.DE),
+  für die Entschlüsslung des Istec-Protokolls.
+
+  Peter Dieth (dieth@seicom.net),
+  für den Account auf einem FreeBSD-Rechner bei Seicom, der den
+  FreeBSD-Port erst möglich gemacht hat.
+
+  Terry Lambert (terry@cs.weber.edu),
+  für die freundlichen und ausführlichen Erklärungen zur "xn"
+  Termcap Capability.
+
+  Jürgen Egeling (ry90@jecalpha.ka.sub.org)
+  für das ROM mit der Firmware-Version 1.92.
+
+  Ralf W. Stephan (ralf@ark.franken.de)
+  für die Hinweise/Änderungen zur Übersetzung von spunk mit den
+  neueren GNU Compilern, sowie die diversen anderen Anregungen zu
+  spunk.
+
+  Norbert Kluge (nkl@scharl.hb.north.de)
+  für das ("die" müßte man korrekterweise sagen :-) Eprom mit der
+  Firmware-Version 1.93, für die diversen Tips und Infos.
+
+  Christian Kratzer (ck@toplink.de),
+  für den Test der FreeBSD-Version, das Bier, und für den FreeBSD-
+  Account.
+
+  Torsten Blum (torstenb@tlk.de)
+  für einige nützliche Hinweise, u.a. zu FreeBSD.
+
+  Ralph-Thomas Aussem (1aussem@informatik.uni-hamburg.de)
+  für den NetBSD (Amiga 68030) Port.
+
+  Markus Bellenberg (jmb@outbreak.gun.de)
+  für die Anregungen und das log2xxx Programm, dessen Funktionalität
+  inzwischen in ESTIC drinsteckt.
+
+  Michael Peschel (mipe@ibb.schwaben.com),
+  für die Vorarbeiten zum seriellen Modul für OS/2 und den NT Port.
+
+  Oliver von Bueren (ovb@swissmail.com),
+  Julian H. Stacey (jhs@freebsd.org),
+  für Tips, Hinweise, Diffs und Arbeit am FreeBSD Port.
+
+  ... und natürlich an alle anderen, die mir mit Bug-Reports, oder
+  auch Lob&Tadel geholfen haben. Falls ich jemanden hier vergessen
+  haben sollte, dann ist das keine böse Absicht. Ich bekomme zeitenweise
+  recht viel Mail zu ESTIC und wenn ich noch andere Dinge um die Ohren
+  habe kann sowas gut mal passieren. In dem Fall einfach kurze Mail
+  an mich.
+

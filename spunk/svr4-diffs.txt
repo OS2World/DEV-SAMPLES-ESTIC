@@ -1,0 +1,1067 @@
+> -------------------------- DIFF ----------------------------------------------
+> Common subdirectories: estic/estic and estic.svr4/estic
+> Common subdirectories: estic/spunk and estic.svr4/spunk
+> Common subdirectories: estic/estic/make and estic.svr4/estic/make
+> Only in estic.svr4/estic/make: svr40-x.mak
+> Only in estic.svr4/estic/make: svr40.mak
+> Common subdirectories: estic/spunk/bsdsrc and estic.svr4/spunk/bsdsrc
+> Common subdirectories: estic/spunk/data and estic.svr4/spunk/data
+> Common subdirectories: estic/spunk/djgppsrc and estic.svr4/spunk/djgppsrc
+> Common subdirectories: estic/spunk/doc and estic.svr4/spunk/doc
+> Common subdirectories: estic/spunk/dos32src and estic.svr4/spunk/dos32src
+> Common subdirectories: estic/spunk/dossrc and estic.svr4/spunk/dossrc
+> Common subdirectories: estic/spunk/lib and estic.svr4/spunk/lib
+> Common subdirectories: estic/spunk/linuxsrc and estic.svr4/spunk/linuxsrc
+> Common subdirectories: estic/spunk/make and estic.svr4/spunk/make
+> Common subdirectories: estic/spunk/nls and estic.svr4/spunk/nls
+> Common subdirectories: estic/spunk/os2src and estic.svr4/spunk/os2src
+> Common subdirectories: estic/spunk/samples and estic.svr4/spunk/samples
+> Common subdirectories: estic/spunk/support and estic.svr4/spunk/support
+> diff -cr estic/spunk/syserror.cc estic.svr4/spunk/syserror.cc
+> *** estic/spunk/syserror.cc	Sat Aug 17 22:37:02 1996
+> --- estic.svr4/spunk/syserror.cc	Mon Aug 19 20:48:04 1996
+> ***************
+> *** 237,243 ****
+>   	    if (Code < 0) {
+>   		return FormatStr (LoadMsg (msUnknown).GetStr (), Code);
+>   	    } else {
+> ! #ifndef SOLARIS
+>   		char* Msg = sys_errlist [Code];
+>   #else
+>   		char* Msg = strerror (Code);
+> --- 237,243 ----
+>   	    if (Code < 0) {
+>   		return FormatStr (LoadMsg (msUnknown).GetStr (), Code);
+>   	    } else {
+> ! #if !defined(SVR4) && !defined(SOLARIS)
+>   		char* Msg = sys_errlist [Code];
+>   #else
+>   		char* Msg = strerror (Code);
+> Common subdirectories: estic/spunk/unixsrc and estic.svr4/spunk/unixsrc
+> Common subdirectories: estic/spunk/xsrc and estic.svr4/spunk/xsrc
+> Only in estic.svr4/spunk/make: svr40-x.mak
+> Only in estic.svr4/spunk/make: svr40.mak
+> Common subdirectories: estic/spunk/samples/std and estic.svr4/spunk/samples/std
+> diff -cr estic/spunk/unixsrc/kbd.cc estic.svr4/spunk/unixsrc/kbd.cc
+> *** estic/spunk/unixsrc/kbd.cc	Sat Aug 17 22:37:04 1996
+> --- estic.svr4/spunk/unixsrc/kbd.cc	Mon Aug 19 20:27:22 1996
+> ***************
+> *** 22,28 ****
+> --- 22,35 ----
+>   #include <string.h>
+>   #include <malloc.h>
+>   #include <unistd.h>
+> + #ifdef SVR4
+> + #include <termio.h>
+> + typedef struct termio SGTTY;
+> + typedef unsigned long chtype;
+> + #include <term.h>
+> + #else
+>   #include <termcap.h>
+> + #endif
+>   #include <termios.h>
+>   #include <sys/time.h>
+>   
+> diff -cr estic/spunk/unixsrc/screen2.cc estic.svr4/spunk/unixsrc/screen2.cc
+> *** estic/spunk/unixsrc/screen2.cc	Sat Aug 17 22:37:06 1996
+> --- estic.svr4/spunk/unixsrc/screen2.cc	Mon Aug 19 20:36:38 1996
+> ***************
+> *** 22,28 ****
+> --- 22,35 ----
+>   #include <string.h>
+>   #include <stdlib.h>
+>   #include <unistd.h>
+> + #ifdef SVR4
+> + #include <termio.h>
+> + typedef struct termio SGTTY;
+> + typedef unsigned long chtype;
+> + #include <term.h>
+> + #else
+>   #include <termcap.h>
+> + #endif
+>   #include <sys/ioctl.h>
+>   
+>   #include "../cont.h"
+> diff -cr estic/spunk/unixsrc/sercom.cc estic.svr4/spunk/unixsrc/sercom.cc
+> *** estic/spunk/unixsrc/sercom.cc	Sat Aug 17 22:37:06 1996
+> --- estic.svr4/spunk/unixsrc/sercom.cc	Tue Aug 20 22:16:58 1996
+> ***************
+> *** 31,36 ****
+> --- 31,39 ----
+>   #include <sys/ioctl.h>
+>   #include <sys/types.h>
+>   #include <sys/time.h>
+> + #ifdef SVR4
+> + #include <stropts.h>
+> + #endif
+>   
+>   #include "../check.h"
+>   #include "../sercom.h"
+> ***************
+> *** 219,225 ****
+> --- 222,230 ----
+>   	default: FAIL ("ComPort::Init: Unsupported stopbits value");
+>       }
+>       switch (Connection) {
+> + #ifndef SVR4
+>   	case 'M': cflag |= CRTSCTS; break;	// not POSIX!
+> + #endif
+>   	case 'D': cflag |= CLOCAL;  break;
+>   	default: FAIL ("ComPort::Init: Unsupported connection setting");
+>       }
+> ***************
+> *** 250,258 ****
+> --- 255,265 ----
+>   	case   9600: Baud = B9600;	break;
+>   	case  19200: Baud = B19200;	break;
+>   	case  38400: Baud = B38400;	break;
+> + #ifndef SVR4
+>   	case  57600: Baud = B57600;	break;
+>   	case 115200: Baud = B115200;	break;
+>   	case 230400: Baud = B230400;	break;
+> + #endif
+>   	default: FAIL ("ComPort::Init: Unsupported baudrate value");
+>       }
+>       ComData->CurrentSettings.c_cflag |= Baud;
+> ***************
+> *** 425,430 ****
+> --- 432,454 ----
+>       // Port must be open
+>       PRECONDITION (IsOpen ());
+>   
+> + #ifdef SVR4
+> +     int res;
+> +     while (ioctl(ComData->Handle,I_NREAD,&res) > 0)
+> +     {
+> + 	if (res)
+> + 	    return res;
+> + 	struct strbuf cb,db;
+> + 	int flag;
+> + 	cb.maxlen = 1;
+> + 	cb.buf = (char *)&res;
+> + 	db.maxlen = 1;
+> + 	db.buf = ((char *)&res) + 1;
+> + 	flag = 0;
+> + 	getmsg(ComData->Handle,&cb,&db,&flag);
+> +     }
+> +     return 0;
+> + #else
+>       // Timeout is zero
+>       timeval Timeout;
+>       Timeout.tv_usec = 0;
+> ***************
+> *** 441,446 ****
+> --- 465,471 ----
+>   
+>       // We have characters waiting if the ready count is greater than zero
+>       return Res > 0;
+> + #endif
+>   }
+>   
+>   
+> ***************
+> *** 476,481 ****
+> --- 501,509 ----
+>       // Port must be open
+>       PRECONDITION (IsOpen ());
+>   
+> + #ifdef SVR4
+> +     return ioctl(ComData->Handle,I_CANPUT,0) == 1;
+> + #else
+>       // Timeout is zero
+>       timeval Timeout;
+>       Timeout.tv_usec = 0;
+> ***************
+> *** 492,497 ****
+> --- 520,526 ----
+>   
+>       // We can write to the descriptor, if the ready count is greater than zero
+>       return Res > 0;
+> + #endif
+>   }
+>   
+>   
+> ***************
+> *** 576,581 ****
+> --- 605,611 ----
+>       // Port must be open
+>       PRECONDITION (IsOpen ());
+>   
+> + #ifndef SVR4
+>       // Use select to check if write is possible
+>       timeval Timeout;
+>       Timeout.tv_usec = u32 (TXTimeout * 1000000) % 1000000;
+> ***************
+> *** 586,591 ****
+> --- 616,624 ----
+>       FD_SET (ComData->Handle, &Desc);
+>   
+>       if (select (ComData->Handle + 1, NULL, &Desc, NULL, &Timeout)) {
+> + #else
+> +     if (ioctl(ComData->Handle,I_CANPUT,0) == 1) {
+> + #endif
+>   	// Descriptor is ready for writing
+>   	write (ComData->Handle, &B, 1);
+>   	return B;
+> diff -cr estic/spunk/xsrc/console.cc estic.svr4/spunk/xsrc/console.cc
+> *** estic/spunk/xsrc/console.cc	Sat Aug 17 22:37:06 1996
+> --- estic.svr4/spunk/xsrc/console.cc	Wed Aug 21 20:34:53 1996
+> ***************
+> *** 220,227 ****
+> --- 220,229 ----
+>       { XK_Up,		{ kbUp,		kbNoKey,      kbCtrlUp,     kbMetaUp	  } },
+>       { XK_Right,		{ kbRight,	kbNoKey,      kbCtrlRight,  kbMetaRight   } },
+>       { XK_Down,		{ kbDown,	kbNoKey,      kbCtrlDown,   kbMetaDown	  } },
+> + #ifndef SVR4
+>       { XK_Page_Up,	{ kbPgUp,	kbNoKey,      kbCtrlPgUp,   kbMetaPgUp	  } },
+>       { XK_Page_Down,	{ kbPgDn,	kbNoKey,      kbCtrlPgDn,   kbMetaPgDn	  } },
+> + #endif
+>       { XK_End,		{ kbEnd,	kbNoKey,      kbCtrlEnd,    kbMetaEnd	  } },
+>       { XK_Home,		{ kbHome,	kbNoKey,      kbCtrlHome,   kbMetaHome	  } },
+>       { XK_Begin,		{ kbHome,	kbNoKey,      kbCtrlHome,   kbMetaHome	  } },
+> ***************
+> *** 245,250 ****
+> --- 247,253 ----
+>       { XK_Delete,	{ kbDel,	kbShiftDel,   kbCtrlDel,    kbMetaDel	  } },
+>       { XK_Insert,	{ kbIns,	kbShiftIns,   kbCtrlIns,    kbMetaIns	  } },
+>       { XK_KP_Enter,	{ kbEnter,	kbNoKey,      kbNoKey,	    kbNoKey	  } },
+> + #ifndef SVR4
+>       { XK_KP_Left,	{ kbLeft,	kbNoKey,      kbCtrlLeft,   kbMetaLeft	  } },
+>       { XK_KP_Up,		{ kbUp,		kbNoKey,      kbCtrlUp,     kbMetaUp	  } },
+>       { XK_KP_Right,	{ kbRight,	kbNoKey,      kbCtrlRight,  kbMetaRight   } },
+> ***************
+> *** 256,261 ****
+> --- 259,265 ----
+>       { XK_KP_Begin,	{ kbHome,	kbNoKey,      kbCtrlHome,   kbMetaHome	  } },
+>       { XK_KP_Delete,	{ kbDel,	kbShiftDel,   kbCtrlDel,    kbMetaDel	  } },
+>       { XK_KP_Insert,	{ kbIns,	kbShiftIns,   kbCtrlIns,    kbMetaIns	  } },
+> + #endif
+>       { XK_KP_F1,		{ kbF1,		kbShiftF1,    kbCtrlF1,     kbMetaF1	  } },
+>       { XK_KP_F2,		{ kbF2,		kbShiftF2,    kbCtrlF2,     kbMetaF2	  } },
+>       { XK_KP_F3,		{ kbF3,		kbShiftF3,    kbCtrlF3,     kbMetaF3	  } },
+> ***************
+> *** 945,951 ****
+> --- 949,959 ----
+>       ScreenColor = (ColorMode == cmColor);
+>   
+>       // Load the font
+> + #ifdef SVR4
+> +     String Font = "fixed";
+> + #else
+>       String Font = "vga";
+> + #endif
+>       String UserFont = GetEnvVar ("SPUNK_XFONT");
+>       if (!UserFont.IsEmpty ()) {
+>   	Font = UserFont;
+> ------------------------------------------------------------------------------
+> ----------------- Makefile estic/make/svr40-x.mak ----------------------------
+> # *****************************************************************************
+> # *									      *
+> # *			   ESTIC Makefile for SVR4.0 (X11)		      *
+> # *									      *
+> # * (C) 1995-96  Ullrich von Bassewitz					      *
+> # *		 Wacholderweg 14					      *
+> # *		 D-70597 Stuttgart					      *
+> # * EMail:	 uz@ibb.schwaben.com					      *
+> # *									      *
+> # *****************************************************************************
+> 
+> 
+> 
+> # $Id$
+> #
+> # $Log$
+> #
+> #
+> 
+> 
+> 
+> # ------------------------------------------------------------------------------
+> # Definitions
+> 
+> # Names of executables
+> AS = gas
+> AR = ar
+> LD = ld
+> ZIP = zip
+> CC = gcc
+> 
+> LIB	= ../spunk/spunk.a
+> INCDIR	= ../spunk
+> 
+> # Use the second line for gcc version 2.6.0 and above
+> #CFLAGS	= -DGENERIC_UNIX -O2 -Wall -I$(INCDIR) -x c++
+> CFLAGS  = -DGENERIC_UNIX -O2 -Wall -I$(INCDIR) -x c++ -fno-implicit-templates -DEXPLICIT_TEMPLATES
+> 
+> # ------------------------------------------------------------------------------
+> # Implicit rules
+> 
+> .c.o:
+> 	$(CC) $(CFLAGS) -c $<
+> 
+> .cc.o:
+> 	$(CC) $(CFLAGS) -c $<
+> 
+> # ------------------------------------------------------------------------------
+> # All OBJ files
+> 
+> OBJS =		callwin.o	\
+> 		chargwin.o	\
+> 		devstate.o	\
+> 		estic.o		\
+> 		icalias.o	\
+> 		icbaseed.o	\
+> 		icconfig.o	\
+> 		iccom.o		\
+> 		icdevs.o	\
+> 		icdiag.o	\
+> 		icdlog.o	\
+> 		icei.o		\
+> 		icerror.o	\
+> 		icident.o	\
+> 		icintcon.o	\
+> 		iclog.o		\
+> 		icver.o		\
+> 		imon.o		\
+> 		istecmsg.o
+> 
+> # ------------------------------------------------------------------------------
+> #
+> 
+> ifeq (.depend,$(wildcard .depend))
+> all:	xestic
+> include .depend
+> else
+> all:	depend
+> endif
+> 
+> 
+> xestic:	$(LIB) $(OBJS)
+> 	$(CC) -o xestic $(OBJS) $(LIB) -lg++ -lc -lX11 -lnsl -lsocket -L /usr/ucblib -lucb
+> 
+> # ------------------------------------------------------------------------------
+> # Create a dependency file
+> 
+> depend dep:
+> 	@echo "Creating dependency information"
+> 	$(CC) -DGENERIC_UNIX -I$(INCDIR) -MM *.cc > .depend
+> 
+> # ------------------------------------------------------------------------------
+> # Create a ZIP file
+> 
+> strip:
+> 	strip xestic
+> 
+> 
+> zip:
+> 	-rm -f estic.zip
+> 	-rm -f *~
+> 	cp Makefile svr40-x.mak
+> 	$(ZIP) -9 estic.zip *.cc *.h estic.res estic.ini *.doc *.chg *.mak alias.dat
+> 
+> bin-dist:	xestic icload strip
+> 	-rm -f estic.zip
+> 	$(ZIP) -9 estic.zip xestic estic.res estic.doc estic.chg estic.ini alias.dat
+> 
+> # ------------------------------------------------------------------------------
+> # clean up
+> 
+> clean:
+> 	-rm *.bak *~
+> 
+> zap:	clean
+> 	-rm *.o
+> 	-rm .depend
+> 
+> 
+> ------------------------------------------------------------------------------
+> ----------------- Makefile estic/make/svr40.mak ------------------------------
+> # *****************************************************************************
+> # *									      *
+> # *			   ESTIC Makefile for SVR4.0      		      *
+> # *									      *
+> # * (C) 1995-96  Ullrich von Bassewitz					      *
+> # *		 Wacholderweg 14					      *
+> # *		 D-70597 Stuttgart					      *
+> # * EMail:	 uz@ibb.schwaben.com					      *
+> # *									      *
+> # *****************************************************************************
+> 
+> 
+> 
+> # $Id$
+> #
+> # $Log$
+> #
+> #
+> 
+> 
+> 
+> # ------------------------------------------------------------------------------
+> # Definitions
+> 
+> # Names of executables
+> AS = gas
+> AR = ar
+> LD = ld
+> ZIP = zip
+> CC = gcc
+> 
+> LIB	= ../spunk/spunk.a
+> INCDIR	= ../spunk
+> 
+> # Use the second line for gcc version 2.6.0 and above
+> #CFLAGS	= -DGENERIC_UNIX -O2 -Wall -I$(INCDIR) -x c++
+> CFLAGS  = -DGENERIC_UNIX -O2 -Wall -I$(INCDIR) -x c++ -fno-implicit-templates -DEXPLICIT_TEMPLATES
+> 
+> # ------------------------------------------------------------------------------
+> # Implicit rules
+> 
+> .c.o:
+> 	$(CC) $(CFLAGS) -c $<
+> 
+> .cc.o:
+> 	$(CC) $(CFLAGS) -c $<
+> 
+> # ------------------------------------------------------------------------------
+> # All OBJ files
+> 
+> OBJS =		callwin.o	\
+> 		chargwin.o	\
+> 		devstate.o	\
+> 		estic.o		\
+> 		icalias.o	\
+> 		icbaseed.o	\
+> 		icconfig.o	\
+> 		iccom.o		\
+> 		icdevs.o	\
+> 		icdiag.o	\
+> 		icdlog.o	\
+> 		icei.o		\
+> 		icerror.o	\
+> 		icident.o	\
+> 		icintcon.o	\
+> 		iclog.o		\
+> 		icver.o		\
+> 		imon.o		\
+> 		istecmsg.o
+> 
+> # ------------------------------------------------------------------------------
+> #
+> 
+> ifeq (.depend,$(wildcard .depend))
+> all:	estic
+> include .depend
+> else
+> all:	depend
+> endif
+> 
+> 
+> estic:	$(LIB) $(OBJS)
+> 	$(CC) -o estic $(OBJS) $(LIB) -ltermcap -lg++ -lc -L /usr/ucblib -lucb
+> 
+> # ------------------------------------------------------------------------------
+> # Create a dependency file
+> 
+> depend dep:
+> 	@echo "Creating dependency information"
+> 	$(CC) -DGENERIC_UNIX -I$(INCDIR) -MM *.cc > .depend
+> 
+> # ------------------------------------------------------------------------------
+> # Create a ZIP file
+> 
+> strip:
+> 	strip estic
+> 
+> 
+> zip:
+> 	-rm -f estic.zip
+> 	-rm -f *~
+> 	cp Makefile svr40-x.mak
+> 	$(ZIP) -9 estic.zip *.cc *.h estic.res estic.ini *.doc *.chg *.mak alias.dat
+> 
+> bin-dist:	estic icload strip
+> 	-rm -f estic.zip
+> 	$(ZIP) -9 estic.zip estic estic.res estic.doc estic.chg estic.ini alias.dat
+> 
+> # ------------------------------------------------------------------------------
+> # clean up
+> 
+> clean:
+> 	-rm *.bak *~
+> 
+> zap:	clean
+> 	-rm *.o
+> 	-rm .depend
+> 
+> 
+> ------------------------------------------------------------------------------
+> ----------------- Makefile spunk/make/svr40-x.mak ----------------------------
+> # *****************************************************************************
+> # *									      *
+> # *		   SPUNK MAKEFILE for a SVR4.0 Unix system (X11)	      *
+> # *									      *
+> # * (C) 1993-96  Ullrich von Bassewitz					      *
+> # *		 Wacholderweg 14					      *
+> # *		 D-70597 Stuttgart					      *
+> # * EMail:	 uz@ibb.schwaben.de					      *
+> # *									      *
+> # *****************************************************************************
+> 
+> 
+> 
+> # $Id$
+> #
+> # $Log$
+> #
+> #
+> 
+> 
+> 
+> # This a unix makefile for the following configuration:
+> # System V Release 4.0 Version 3.0 for Intel 386
+> # gcc V 2.6.1
+> # It should (!) work for other SVR4 systems too.
+> 
+> 
+> 
+> # ------------------------------------------------------------------------------
+> # Definitions
+> 
+> # Names of executables, assumes gcc is used
+> AS = gas
+> AR = ar
+> LD = ld
+> ZIP = zip
+> CC = gcc
+> 
+> # Flags for the gnu compiler (use the second one for gcc >= 2.6.0)
+> #CFLAGS	= -DSVR4 -DGENERIC_UNIX -O2 -Wall -x c++
+> CFLAGS	= -DSVR4 -DGENERIC_UNIX -O2 -Wall -x c++ -fno-implicit-templates -DEXPLICIT_TEMPLATES
+> 
+> LIB	= spunk.a
+> ZIPFILE = spunk.zip
+> 
+> # ------------------------------------------------------------------------------
+> # Implicit rules
+> 
+> .c.o:
+> 	$(CC) $(CFLAGS) -c $<
+> 
+> .cc.o:
+> 	$(CC) $(CFLAGS) -c $<
+> 
+> # ------------------------------------------------------------------------------
+> # All SPUNK OBJ files
+> 
+> OBJS	=	bitset.o	\
+> 		charset.o	\
+> 		chartype.o	\
+> 		check.o		\
+> 		coll.o		\
+> 		console.o	\
+> 		cont.o		\
+> 		cpucvt.o	\
+> 		crc16.o		\
+> 		crcccitt.o	\
+> 		crcstrm.o	\
+> 		datetime.o	\
+> 		delay.o		\
+> 		environ.o	\
+> 		errlog.o	\
+> 		event.o		\
+> 		filecoll.o	\
+> 		filepath.o	\
+> 		filesel.o	\
+> 		filesys.o	\
+> 		frame.o		\
+> 		fviewer.o	\
+> 		inifile.o	\
+> 		itemlbl.o	\
+> 		itemwin.o	\
+> 		keydef.o	\
+> 		keymap.o	\
+> 		listnode.o	\
+> 		memcheck.o	\
+> 		memstrm.o	\
+> 		menue.o		\
+> 		menuedit.o	\
+> 		menuitem.o	\
+> 		msg.o		\
+> 		msgcoll.o	\
+> 		national.o	\
+> 		nlsinit.o	\
+> 		nullstrm.o	\
+> 		object.o	\
+> 		palette.o	\
+> 		password.o	\
+> 		program.o	\
+> 		progutil.o	\
+> 		rect.o		\
+> 		rescoll.o	\
+> 		resource.o	\
+> 		screen.o	\
+> 		sercom.o	\
+> 		settings.o	\
+> 		splitmsg.o	\
+> 		statline.o	\
+> 		stdmenue.o	\
+> 		stdmsg.o	\
+> 		str.o		\
+> 		strbox.o	\
+> 		strcoll.o	\
+> 		strcvt.o	\
+> 		stream.o	\
+> 		strmable.o	\
+> 		strparse.o	\
+> 		strpool.o	\
+> 		syserror.o	\
+> 		textitem.o	\
+> 		textstrm.o	\
+> 		thread.o	\
+> 		winattr.o	\
+> 		window.o	\
+> 		winmgr.o	\
+> 		winsize.o
+> 
+> # ------------------------------------------------------------------------------
+> # All SPUNK header files
+> 
+> HDRS	=	bitset.h	\
+> 		statdef.h	\
+> 		charset.h	\
+> 		chartype.h	\
+> 		check.h		\
+> 		circbuf.h	\
+> 		coll.h		\
+> 		cont.h		\
+> 		crc.h		\
+> 		crcstrm.h	\
+> 		datetime.h	\
+> 		errlog.h	\
+> 		event.h		\
+> 		filecoll.h	\
+> 		filepath.h	\
+> 		filesel.h	\
+> 		filesys.h	\
+> 		fviewer.h	\
+> 		inifile.h	\
+> 		itemwin.h	\
+> 		kbd.h		\
+> 		keydef.h	\
+> 		keymap.h	\
+> 		listbox.h	\
+> 		listnode.h	\
+> 		machine.h	\
+> 		mempool.h	\
+> 		memstrm.h	\
+> 		menue.h		\
+> 		menuedit.h	\
+> 		menuitem.h	\
+> 		msg.h		\
+> 		msgcoll.h	\
+> 		msgid.h		\
+> 		national.h	\
+> 		nullstrm.h	\
+> 		object.h	\
+> 		palette.h	\
+> 		password.h	\
+> 		program.h	\
+> 		progutil.h	\
+> 		rect.h		\
+> 		rescoll.h	\
+> 		resed.h		\
+> 		resource.h	\
+> 		screen.h	\
+> 		scrmodes.h	\
+> 		sercom.h	\
+> 		settings.h	\
+> 		splitmsg.h	\
+> 		stack.h		\
+> 		statline.h	\
+> 		stdmenue.h	\
+> 		stdmsg.h	\
+> 		str.h		\
+> 		strcoll.h	\
+> 		strcvt.h	\
+> 		stream.h	\
+> 		streamid.h	\
+> 		strmable.h	\
+> 		strparse.h	\
+> 		strpool.h	\
+> 		textitem.h	\
+> 		textstrm.h	\
+> 		thread.h	\
+> 		winattr.h	\
+> 		window.h	\
+> 		winflags.h	\
+> 		winmgr.h	\
+> 		winsize.h
+> 
+> # ------------------------------------------------------------------------------
+> # All resedit OBJ files
+> 
+> RESEDITOBJS	=	resed.o		\
+> 			resedit.o	\
+> 			resfile.o	\
+> 			resitem.o	\
+> 			resprint.o	\
+> 			resutil.o	\
+> 			reswin.o
+> 
+> # ------------------------------------------------------------------------------
+> # Dummy targets
+> 
+> xresed:	$(LIB) $(RESEDITOBJS) $(HDRS)
+> 	$(CC) -g -o xresed $(RESEDITOBJS) $(LIB) -lg++ -lX11 -lnsl -lsocket
+> 
+> lib:	$(LIB)
+> 
+> # ------------------------------------------------------------------------------
+> # Library
+> 
+> $(LIB):		$(OBJS)
+> 	$(AR) r $(LIB) $?
+> 	ranlib $(LIB)
+> 
+> depend dep:
+> 	@echo "Creating dependency information"
+> 	$(CC) -DGENERIC_UNIX -MM *.cc > .depend
+> 
+> # ------------------------------------------------------------------------------
+> # Target specific files
+> 
+> console.o:	xsrc/console.cc $(HDRS)
+> 	$(CC) $(CFLAGS) -c $<
+> 
+> delay.o:	unixsrc/delay.cc $(HDRS)
+> 	$(CC) $(CFLAGS) -c $<
+> 
+> filesys.o:	unixsrc/filesys.cc $(HDRS)
+> 	$(CC) $(CFLAGS) -c $<
+> 
+> nlsinit.o:	unixsrc/nlsinit.cc $(HDRS)
+> 	$(CC) $(CFLAGS) -c $<
+> 
+> screen.o:	xsrc/screen.cc $(HDRS)
+> 	$(CC) $(CFLAGS) -c $<
+> 
+> sercom.o:	unixsrc/sercom.cc $(HDRS)
+> 	$(CC) $(CFLAGS) -c $<
+> 
+> # ------------------------------------------------------------------------------
+> # Create a ZIP file
+> 
+> zip:
+> 	-rm -f spunk.zip
+> 	-rm -f *.bak *~
+> 	$(ZIP) $(ZIPFILE) *.cc *.h bccdos.cfg bccos2.cfg baseres.res resed.res
+> 	-cp Makefile make/svr40-x.mak
+> 	$(ZIP) $(ZIPFILE) copying.txt spunk.chg make/*
+> 	$(ZIP) $(ZIPFILE) dossrc/*.cc dossrc/*.asm
+> 	$(ZIP) $(ZIPFILE) dos32src/*.cc dos32src/*.asm djgppsrc\*.cc
+> 	$(ZIP) $(ZIPFILE) linuxsrc/*.cc os2src/*.cc bsdsrc/*.cc unixsrc/*.cc
+> 	$(ZIP) $(ZIPFILE) xsrc/*.cc samples/*
+> 	$(ZIP) $(ZIPFILE) doc/*.doc support/* data/*
+> 
+> # ------------------------------------------------------------------------------
+> # clean up
+> 
+> clean:
+> 	-rm -f *~ linuxsrc/*~ bsdsrc/*~ unixsrc/*~
+> 
+> zap:	clean
+> 	-rm -f *.o
+> 	-rm -f .depend
+> 
+> 
+> 
+> 
+> ------------------------------------------------------------------------------
+> ----------------- Makefile spunk/make/svr40.mak ------------------------------
+> # *****************************************************************************
+> # *									      *
+> # *		   SPUNK MAKEFILE for a SVR4.0 Unix system		      *
+> # *									      *
+> # * (C) 1993-96  Ullrich von Bassewitz					      *
+> # *		 Wacholderweg 14					      *
+> # *		 D-70597 Stuttgart					      *
+> # * EMail:	 uz@ibb.schwaben.de					      *
+> # *									      *
+> # *****************************************************************************
+> 
+> 
+> 
+> # $Id$
+> #
+> # $Log$
+> #
+> #
+> 
+> 
+> 
+> # This a unix makefile for the following configuration:
+> # System V Release 4.0 Version 3.0 for Intel 386
+> # gcc V 2.6.1
+> # It should (!) work for other SVR4 systems too.
+> 
+> 
+> 
+> # ------------------------------------------------------------------------------
+> # Definitions
+> 
+> # Names of executables, assumes gcc is used
+> AS = gas
+> AR = ar
+> LD = ld
+> ZIP = zip
+> CC = gcc
+> 
+> # Flags for the gnu compiler (use the second one for gcc >= 2.6.0)
+> #CFLAGS	= -DSVR4 -DGENERIC_UNIX -O2 -Wall -x c++
+> CFLAGS	= -DSVR4 -DGENERIC_UNIX -O2 -Wall -x c++ -fno-implicit-templates -DEXPLICIT_TEMPLATES
+> 
+> LIB	= spunk.a
+> ZIPFILE = spunk.zip
+> 
+> # ------------------------------------------------------------------------------
+> # Implicit rules
+> 
+> .c.o:
+> 	$(CC) $(CFLAGS) -c $<
+> 
+> .cc.o:
+> 	$(CC) $(CFLAGS) -c $<
+> 
+> # ------------------------------------------------------------------------------
+> # All SPUNK OBJ files
+> 
+> OBJS	=	bitset.o	\
+> 		charset.o	\
+> 		chartype.o	\
+> 		check.o		\
+> 		coll.o		\
+> 		cont.o		\
+> 		cpucvt.o	\
+> 		crc16.o		\
+> 		crcccitt.o	\
+> 		crcstrm.o	\
+> 		datetime.o	\
+> 		delay.o		\
+> 		environ.o	\
+> 		errlog.o	\
+> 		event.o		\
+> 		filecoll.o	\
+> 		filepath.o	\
+> 		filesel.o	\
+> 		filesys.o	\
+> 		frame.o		\
+> 		fviewer.o	\
+> 		inifile.o	\
+> 		itemlbl.o	\
+> 		itemwin.o	\
+> 		kbd.o		\
+> 		keydef.o	\
+> 		keymap.o	\
+> 		listnode.o	\
+> 		memcheck.o	\
+> 		memstrm.o	\
+> 		menue.o		\
+> 		menuedit.o	\
+> 		menuitem.o	\
+> 		msg.o		\
+> 		msgcoll.o	\
+> 		national.o	\
+> 		nlsinit.o	\
+> 		nullstrm.o	\
+> 		object.o	\
+> 		palette.o	\
+> 		password.o	\
+> 		program.o	\
+> 		progutil.o	\
+> 		rect.o		\
+> 		rescoll.o	\
+> 		resource.o	\
+> 		screen.o	\
+> 		screen2.o	\
+> 		sercom.o	\
+> 		settings.o	\
+> 		splitmsg.o	\
+> 		statline.o	\
+> 		stdmenue.o	\
+> 		stdmsg.o	\
+> 		str.o		\
+> 		strbox.o	\
+> 		strcoll.o	\
+> 		strcvt.o	\
+> 		stream.o	\
+> 		strmable.o	\
+> 		strparse.o	\
+> 		strpool.o	\
+> 		syserror.o	\
+> 		textitem.o	\
+> 		textstrm.o	\
+> 		thread.o	\
+> 		winattr.o	\
+> 		window.o	\
+> 		winmgr.o	\
+> 		winsize.o
+> 
+> # ------------------------------------------------------------------------------
+> # All SPUNK header files
+> 
+> HDRS	=	bitset.h	\
+> 		statdef.h	\
+> 		charset.h	\
+> 		chartype.h	\
+> 		check.h		\
+> 		circbuf.h	\
+> 		coll.h		\
+> 		cont.h		\
+> 		crc.h		\
+> 		crcstrm.h	\
+> 		datetime.h	\
+> 		errlog.h	\
+> 		event.h		\
+> 		filecoll.h	\
+> 		filepath.h	\
+> 		filesel.h	\
+> 		filesys.h	\
+> 		fviewer.h	\
+> 		inifile.h	\
+> 		itemwin.h	\
+> 		kbd.h		\
+> 		keydef.h	\
+> 		keymap.h	\
+> 		listbox.h	\
+> 		listnode.h	\
+> 		machine.h	\
+> 		mempool.h	\
+> 		memstrm.h	\
+> 		menue.h		\
+> 		menuedit.h	\
+> 		menuitem.h	\
+> 		msg.h		\
+> 		msgcoll.h	\
+> 		msgid.h		\
+> 		national.h	\
+> 		nullstrm.h	\
+> 		object.h	\
+> 		palette.h	\
+> 		password.h	\
+> 		program.h	\
+> 		progutil.h	\
+> 		rect.h		\
+> 		rescoll.h	\
+> 		resed.h		\
+> 		resource.h	\
+> 		screen.h	\
+> 		sercom.h	\
+> 		settings.h	\
+> 		splitmsg.h	\
+> 		stack.h		\
+> 		statline.h	\
+> 		stdmenue.h	\
+> 		stdmsg.h	\
+> 		str.h		\
+> 		strcoll.h	\
+> 		strcvt.h	\
+> 		stream.h	\
+> 		streamid.h	\
+> 		strmable.h	\
+> 		strparse.h	\
+> 		strpool.h	\
+> 		textstrm.h	\
+> 		thread.h	\
+> 		winattr.h	\
+> 		window.h	\
+> 		winflags.h	\
+> 		winmgr.h	\
+> 		winsize.h
+> 
+> # ------------------------------------------------------------------------------
+> # All resedit OBJ files
+> 
+> RESEDITOBJS	=	resed.o		\
+> 			resedit.o	\
+> 			resfile.o	\
+> 			resitem.o	\
+> 			resprint.o	\
+> 			resutil.o	\
+> 			reswin.o
+> 
+> # ------------------------------------------------------------------------------
+> # Dummy targets
+> 
+> resed:	$(LIB) $(RESEDITOBJS) $(HDRS)
+> 	$(CC) -g -o resed $(RESEDITOBJS) $(LIB) -ltermcap -lg++
+> 
+> lib:	$(LIB)
+> 
+> # ------------------------------------------------------------------------------
+> # Library
+> 
+> $(LIB):		$(OBJS)
+> 	$(AR) r $(LIB) $?
+> 	ranlib $(LIB)
+> 
+> depend dep:
+> 	@echo "Creating dependency information"
+> 	$(CC) -DGENERIC_UNIX -MM *.cc > .depend
+> 
+> # ------------------------------------------------------------------------------
+> # Target specific files
+> 
+> delay.o:	unixsrc/delay.cc $(HDRS)
+> 	$(CC) $(CFLAGS) -c $<
+> 
+> filesys.o:	unixsrc/filesys.cc $(HDRS)
+> 	$(CC) $(CFLAGS) -c $<
+> 
+> kbd.o:		unixsrc/kbd.cc $(HDRS)
+> 	$(CC) $(CFLAGS) -c $<
+> 
+> nlsinit.o:	unixsrc/nlsinit.cc $(HDRS)
+> 	$(CC) $(CFLAGS) -c $<
+> 
+> screen.o:	unixsrc/screen.cc $(HDRS)
+> 	$(CC) $(CFLAGS) -c $<
+> 
+> screen2.o:	unixsrc/screen2.cc $(HDRS)
+> 	$(CC) $(CFLAGS) -c $<
+> 
+> sercom.o:	unixsrc/sercom.cc $(HDRS)
+> 	$(CC) $(CFLAGS) -c $<
+> 
+> # ------------------------------------------------------------------------------
+> # Create a ZIP file
+> 
+> zip:
+> 	-rm -f spunk.zip
+> 	-rm -f *.bak *~
+> 	$(ZIP) $(ZIPFILE) *.cc *.h bccdos.cfg bccos2.cfg baseres.res resed.res
+> 	-cp Makefile make/svr40.mak
+> 	$(ZIP) $(ZIPFILE) copying.txt spunk.chg make/*
+> 	$(ZIP) $(ZIPFILE) dossrc/*.cc dossrc/*.asm
+> 	$(ZIP) $(ZIPFILE) dos32src/*.cc dos32src/*.asm djgppsrc\*.cc
+> 	$(ZIP) $(ZIPFILE) linuxsrc/*.cc os2src/*.cc bsdsrc/*.cc unixsrc/*.cc
+> 	$(ZIP) $(ZIPFILE) xsrc/*.cc samples/*
+> 	$(ZIP) $(ZIPFILE) doc/*.doc support/* data/*
+> 
+> # ------------------------------------------------------------------------------
+> # clean up
+> 
+> clean:
+> 	-rm -f *~ linuxsrc/*~ bsdsrc/*~ unixsrc/*~
+> 
+> zap:	clean
+> 	-rm -f *.o
+> 	-rm -f .depend
+> 
+> 
+> 
+> 
+> ------------------------------------------------------------------------------
+> 
+
+

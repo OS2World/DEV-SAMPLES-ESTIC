@@ -1,0 +1,12 @@
+estic
+estic.rc
+estic.ini
+cron.dat
+alias.dat
+*.log
+makefile
+Makefile
+*.ic
+*.sn
+.depend
+areacode.dat

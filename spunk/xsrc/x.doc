@@ -1,0 +1,9 @@
+Die beiden Alt-Tasten dürfen nicht "parallelgeschaltet" sein, in meinem Fall
+war dazu ein
+
+        xmodmap -e "remove mod5 = Alt_L"
+
+notwendig.
+
+VGA Font sollte vorhanden sein.
+

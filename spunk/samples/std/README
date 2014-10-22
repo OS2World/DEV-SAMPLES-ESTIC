@@ -1,0 +1,30 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+
+This is an example application that uses the SPUNK library.
+It does some fancy things with a relais interface that is
+connected to a parallel port.  It is a preliminary version
+of a program I write for a company.  You may do with the code
+whatever you want.
+
+Apart from the handling of the library, there are some classes
+you might be interested in.  Just read the source.
+Code should work on Linux and DJGPP (change Makefile).
+
+ralf@ark.franken.de
+
+Some security (MD5):
+178ef52cd97abe1d8c80e04205fa73c4  CHANGES
+c9bb6e738135c26fc396ef8c4c9656ad  Makefile
+a9baf5e924b169cb8ecd4e8e9597e21a  std.cc
+803b407117d2af58849779c4b55f59da  std.h
+bb3a4cbc8c88ca5bae4a41b5d29d93f4  std.res
+
+-----BEGIN PGP SIGNATURE-----
+Version: 2.6.i
+
+iQCVAgUBMNLn5PUDwEOnE+zpAQEuGgP9HX/MxJftMnEYkPkGHyyWRsMk1QHLxAKB
+tjFAzvBRgB25G8/KaHzMc+0PHK9c6C7YB9CbKpI98TAMreaHGZIhDcsqrq3Ge+Il
+9IW9c3J/eyHF/dHe/mqOpcz1bJYKa9MfqFXsaykksfUq5LF5rbSnXXZ4bbyyLk42
+KfuE6Ub4VOA=
+=cHy0
+-----END PGP SIGNATURE-----

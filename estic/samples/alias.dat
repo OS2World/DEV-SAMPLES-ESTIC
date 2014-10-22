@@ -1,0 +1,27 @@
+; Beispiel für ein ESTIC Aliasfile. Zeilen mit einem ';' an der ersten
+; Stelle sind Kommentare. Leere Zeilen werden ignoriert. Alle anderen Zeilen
+; enthalten als erstes die Nummer, für die ein Alias definiert werden soll
+; dann den String, durch den die Nummer ersetzt werden soll.
+; Die Nummer kann (der besseren Lesbarkeit halber) Sonderzeichen, jedoch
+; keine Leerzeichen (Tabs usw.) enthalten. 0711121212, 0711/121212,
+; 0711-121212 oder +49-711-121212 sind Beispiele für zulässige Nummern.
+;
+; Achtung: Ein Alias für ein interes Gerät (21-xx) sollte maximal 12,
+; ein Alias für ein externes maximal 16 Zeichen lang sein, alles was länger
+; ist wird von ESTIC abgeschnitten, weil es sonst nicht in eine Zeile im
+; Logfile passt.
+;
+
+;		 123456789012
+21		"Büro"
+22		"Fax, Büro"
+23		"Schlafzimmer"
+24		"Wohnzimmer"
+25		"Kinderzimmer"
+26		"Küche"
+27		"Handy"
+28		"Anrufb."
+
+;		 1234567890123456
+01188		"Telefon-Auskunft"
+06231/123456	"H. Kohl, privat"

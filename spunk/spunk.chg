@@ -1,0 +1,1035 @@
+12.02.95:
+Changed identifiers "EntryCount" to "GetCount". This affects the collection
+classes and the ResourceFile class.
+Added a name member and a function to access it to class FileStream. It is
+now possible to retrieve the name of the associated file.
+Changed a lot of virtual template functions from inline to extern linkage.
+Added functionality to class FileViewer.
+
+13.02.95:
+Added some more (Watcom specific) signal handling functions to class Thread.
+Changed the behavior of class Program when the resource file is not found.
+Added functionality to class FileViewer.
+Added dynamic left/right links to the window items in Menue::GetChoice. This
+is switchable through a flag defined in itemwin.h. Extended the resource
+editor to be able to set/reset this flag.
+Changed signal handling in class Thread: The signal handler is reinstalled
+before calling the signal specific virtual functions. If the signal handler
+is reinstalled after calling the handling function, the function cannot use
+longjmp to return from the handler.
+Changed the default handling of a few signals, including SIGBREAK. The new
+default is to reraise the signal without reinstalling the signal handler.
+This prevents the creation of "uninterruptible" programs by default.
+Changed the check for vkAbort in FileViewer::Browse to be done after the
+call to HandleKey. That way, HandleKey can change the key to vkAbort if
+desired.
+
+20.02.95:
+Changed TEXTSTRM.CC, files containing a Ctrl-Z (OS/2 and MS-DOS) are now
+handled correctly.
+
+21.02.95:
+New system dependent file filesys.h/filesys.cc. Some information contained in
+machine.h was moved to filesys, some identifiers changed. Lots of new functions
+in module filepath.
+Prepared a new target DOS4G.
+
+22.02.95:
+Implemented a new target DOS4G (Watcom specific, DOS4G dos extender).
+Rewrote dossrc\kbd.cc, dossrc\screen.cc.
+Implemented lots of new (tweaked) video modes for DOS and some of them also
+for OS/2.
+Complete rewrite of the makefile. It is now possible to build all targets
+(excluding Linux) from DOS or OS/2.
+Extended and documented the string class.
+New module charset implementing class CharSet.
+Lots of changes in class BitSet (made parameters const if possible).
+Started to implement class FileSelector.
+
+23.02.95:
+New module filecoll.
+New functions in module filepath: DelPathSep, FIsAbsolute.
+New file borstat.h.
+Prepared linuxsrc/filesys.cc
+Renamed the keyboard object to Kbd.
+Redesigned the KeyMapper object. Changed the target specific kbd.cc and
+screen.cc files.
+Removed the frame characters from the winattr.cc files and put them in a file
+for there own (frame.cc), because they are no longer system dependent.
+Removed the definition of the additional chars and made them constants
+in the .h file for the same reason.
+
+24.02.95:
+Rewrote the linux specific files. Started port to linux. Some small changes
+to improve compatibilty and to overcome minor problems. Keyboard module and
+color output to console already working.
+
+25.02.95:
+Did terminal support for linux. More termcap entries, monochrome support,
+keyboard support for terminals. Did many optimizations on screen output.
+Previously I assumed, that the actual output to the screen is cheaper
+than searching through the window stack. This changed when serial terminal
+support appeared. Sometimes there were 4 updates of the same screen area
+without any user input!
+
+26.02.95:
+Lots of minor changes to adopt the bevavior to linux.
+Added the name of the help file to class Program. The existance of the
+help file is checked when the program is started.
+Added an additional parameter for Keyboard::GetMappedKey (default has not
+changed).
+Changed behavior of KeyBoard::Peek: The function will now return immediately
+with a return value of kbNoKey if no key is available.
+Changed the complete handling of key names. Key names are now loaded from
+the resource. Changed the handling of virtual/normal keys. There are more
+virtual keys now (any key that has a function in his name should be virtual
+to be remappable). Added code to the keyboard classes to handle that. Old code
+will work, as long as no kbXXXX constants are used that are now virtual keys
+(check keydef.h for that).
+Changed the function Collection::Load: Items loaded with GetItem are not
+longer inserted directly but via Insert. This handles the case, when the
+sort order of a sorted collection has changed while the collection has been
+on disk. A good example for that is a string collection that is sorted by
+national conventions and that is transfered to another country. The old
+code would break, the new one will resort the collection when loading.
+Changed the default string compare in module str and other places from
+strcmp to strcoll.
+Removed an error from String::Len (const char*) which caused an endless loop
+when the parameter has length 1.
+
+27.02.95:
+Spitted module national into a target specific initialization file, nlsinit.cc
+and a generic module national.cc. Complete rewrite of the NLS system. There
+are now functions to set different countries and languages. Both resource
+files (english and german) combined. ResourceFile::Get now searches first for
+the language specific version of a resource, the tries to load a generic
+version.
+Fixed a bug in GetEnvNum.
+Fixed a bug in Container::LoadData.
+
+28.02.95:
+Renamed Collection::Error to Collection::CollError to avoid confusion in
+programs that have a (global) function Error. Member functions of a class
+derived from Collection will call Collection::Error instead without any
+warnings by compiler or linker.
+Changed secondary mappings for many virtual keys to something more WordStar(tm)
+compatible.
+Changed StringParser::GetFloat not to use pow, so the math library is not
+needed to link classlib programs.
+Fixed a bug in Window::CWrite: The function did not account for '~' chars
+when clipping the length.
+More optimizations for display update speed.
+Made functions to change the state of a window item virtual.
+New functions WindowItem::DrawItemText, MenueItem::DrawItemText.
+
+02.03.95:
+Fixed a bug in menue.cc: Menue::SetStringValue did not know about PasswordEdits.
+New function in module keydef: GetKeyName3().
+Changed class TextStream to expand tab characters when reading in a line from
+a file.
+
+03.03.95:
+New module progutil. Adapted all other modules to use progutil.
+New functions in class Program to support an application message base. Removed
+the constant MSGBASE_USER from msgid.h. Programs using this constant must be
+changed to use an application message base (this allows easier updating of
+resources since the message bases don't have to be merged when updating,
+merging the resources is sufficient).
+Added more error checking to Stream.Get/Stream.Put/Stream.Read. Added check
+for duplicate class ids to the constructor of StreamableClass (yes, I learned
+it the hard way :-).
+
+04.03.95:
+Changed FileViewer::DrawLine to work with buggy gcc. Changed siEsc_Abort in
+FileViewer::Browse to siEsc_End.
+
+10.03.95:
+Added the capability to lock the window system when using more than one thread
+(OS/2).
+
+20.03.95 - 27.03.95:
+Some small changes. Added more virtual keys (vkOpen, vkQuit, etc.) so existing
+programs have to be changed again (I'm sorry, but this may happen again).
+Fixed a bug in Window::Activate, the window that should be activated has to be
+unlinked from the chain of active windows in case it's already in there.
+
+28.03.95:
+Rewrote the Collection and ListNode template classes to use an underlying
+implementation class that has the complete functionality but uses void pointers.
+This should result in smaller programs (I hope).
+Because of overloading problems, the return type of Collection::GetItem changed
+from T* to void*. This may cause changes in application programs.
+
+39.03.95 - 31.03.95:
+More rewrites to save some space. Added a few utility member functions to some
+classes: RootWindow::RedrawScreen, Program::RedrawScreen, etc.
+
+01.04.95:
+Added support for a frame in a special color when the window is resizing. Added
+another virtual key, vkSave plus the mappings for this key in the keyboard
+layers. Added window flags wfCanMove and wfCanResize. This is a start to get the
+move & resize capability of windows into the library.
+
+02.04.95:
+Wrote some code for the file selector
+
+03.04.95:
+Documented the window module. Changed Window::MaxX and Window::MaxY to return
+the correct maximum X/Y coordinate. Until now, both functions returned the
+size of the inner window which is one more than the maximum allowed X/Y
+position because X/Y positions are 0/0 base. This may break application code
+in a few places.
+
+05.04.95:
+Many small changes and additions to support moving and resizing of menues and
+windows.
+
+07.04.95:
+Changed the ListBox constructor to accept an additional argument (the palette
+index of the selected entry when the listbox is not selected). You have to
+change your derived constructors.
+Fixed a bug in the linux keyboard handler: Switching to escape prefix mode did
+not work ("Thou shalt check return codes").
+
+10.04.95 - 12.04.95:
+SIGWINCH now works under Linux. Small changes and some more bug fixes in the
+Linux keyboard and screen handlers. Translation tables in module screen are
+now loaded from the resource file.
+Added a function Program::Idle that is currently called from the Linux keyboard
+handler (this is used to handle SIGWINCH). Program::Idle is currently not called
+in DOS & OS/2.
+
+27.04.95:
+The library finally got a name; it is now called SPUNK after a (fantasy) desease
+created by Pippi Langstrumpf.
+Fixed a bug in the Linux keyboard handler that was not noticed by g++ 2.5.8:
+Class KeyMapper cannot inherit private from class SortedCollection. (Thanks to
+Thomas Faehnle, thomas.faehnle@student.uni-ulm.de).
+Wrote the first part of the documentation.
+
+28.04.95:
+Fixed a bug in program.cc: The resource file should be opened for read access
+only. Thanks to Jim Ockers, ockers.umr.edu.
+
+30.04.95:
+Made argc and argv required parameters to the constructor of class Program.
+They will be expanded if the program is running under OS/2 or DOS. Changed
+Program::Program to take notice of argc/argv.
+Moved Program::Idle to Thread::Idle.
+Started to write an X backend for SPUNK.
+
+10.05.95:
+Changed the crc block functions in crcccitt.cc and crc16.cc to work with blocks
+of size zero.
+
+11.05.95:
+Added a function FSize to module filepath. Added an additional parameter (with
+default value) to function SplitLine.
+
+17.05.95:
+Changed the pack function of the resource editor (ResEdApp::Pack) to flush
+the index after packing the file. This way, the resource file is in a valid
+state and still usable if the editor crashes.
+Changed the minimum size of a framed window from 4 to 3.
+
+19.05.95:
+Fixed a bug in FloatItem::MinWidth. The function did not account for the
+trailing digits.
+
+21.05.95:
+Fixed a bug in Window::SetWindowNumber that caused the function not to set
+the given number as new window number.
+
+22.05.95:
+Fixed two bugs. ItemWindow::Load now does a SetWidth on every item. This causes
+a reset of the entry text. OffOnItem::Load and NoYesItem::Load now do a reset
+of the current displayed value string.
+
+23.05.95:
+Added overloaded search functions requiring char pointers instead of Strings to
+module inifile. This should make programs smaller.
+
+29.05.95:
+Added a workaround for a bug that pops up when moving simple text windows: When
+aborting a move/resize command, Window::Resize has been used to restore the
+original position of the window. Since Window::Resize does destroy the window
+contents and a simple text window does not know how to redraw it's interior,
+this caused the window contents to vanish. MoveResize now uses Window::Move if
+the size of the window has not changed.
+
+30.05.95:
+Added a new function Screen::TerminalSpeed(). Wrote another part of the file
+selector. New overloaded function FSplit in module filepath. The new function
+does not split name and extension. Made lots of member function of class
+FileInfo const. Added a new functions ListBox::At() and ListBox::GetSelection().
+Added defintions for symbolic links and sockets to borstat.h and renamed it to
+statdef.h.
+Fixed a bug in FileEdit::CharIsOk(): The function did not accept a colon even
+if the file system supports drives.
+Added a field fsCurDir to the FileSysInfo struct in module filesys. Added a
+function CleanPath to module filepath.
+
+31.05.95:
+Made the constants in module filesys external to avoid compiler warnings about
+unreachable code. Added functionality to modules filesys and filepath.
+
+01.06.95:
+Worked on the file selector. Added functions to modules filesel/filesys/
+filepath. Fixed some bugs in these modules.
+
+02.06.95:
+Worked around a watcom bug in module filepath. Changed the german time
+separator from '.' to ':' ('.' is the "official" time separator, but no one
+uses it). Many more changes in filesel/filesys/filepath. Completed most work
+on the file selector.
+
+03.06.95:
+Changes in statflag.h, statline.cc etc.
+
+04-08.06.95:
+Did some tuning on the file selector and related functions. Changed the key
+names (Ctrl-X is now Ctrl+X, Esc+Esc is now Esc-Esc). Added some stuff to the
+statusline. Started to add context sensitive help to the library.
+
+09.06.95:
+Fixed a serious design bug in class StringPool. Class StringPool should not hold
+any pointers to items contained in an object of class MemPool. Whenever the
+buffer memory of class MemPool is expanded, all those pointers are becoming
+invalid.
+
+18.06.95/19.06.1995:
+Fixed some portability bugs: The resource file header has been read in binary
+form from the stream. This prevents byte swapping on big endian cpus. In module
+stream, the "old style" data type were used instead of the fixed size ones.
+Introduced conditional defines CPU_LITTLE_ENDIAN and CPU_BIG_ENDIAN (must be
+defined in machine.h).
+New module cpucvt that converts the basic data types to and from the external
+format. Changed the stream module to do those conversions on read and write of
+integer data types.
+
+22.06.95:
+Fixed a bug in module itemwin: The ItemWindow member functions to change the
+state of a specific item should check SelectedItem after changing the state.
+StringItem had a wrong pad spec, the input should be displayed left, not right
+padded.
+Fixed a bug in the resource editor (module resitem): After changing the text
+of an item, the complete item string has to be rebuild, otherwise the new
+text is not displayed.
+
+27.06.95-28.06.95:
+Started to implement a serial communication module for all platforms. This will
+be similar to the OS/2 user.cc module and will be named sercom. The user module
+will be rewritten as needed (only a few small changes). DOS support finished
+but not tested.
+
+29.06.95:
+Added functionality to class CharSet. Changed implementation of class TextEdit.
+THIS WILL MAKE OLD RESOURCES CONTAINING TextEdit OBJECTS INCOMPATIBLE. Added
+a new item class RStringItem. Changed the resource editor to use the new class
+and to provide a more object orientated approach when editing window items.
+
+30.06.95:
+Added a new member function ItemWindow::PlaceNear (const Point&).
+Fixed a bug in module filesel: If a default extension has been specified and
+the file did not exist, the default extension has been added to the file name
+without checking if there has been already a default extension.
+
+01.07.95:
+Tested and debugged the DOS sercom module. Converted the old OS/2 user module
+to sercom and made the user module obsolete.
+
+02.07.95:
+Ported the sercom module to 32-bit DOS (DOS4G) and to Linux.
+
+03.07.95:
+Deleted a Clear() statement in Window::ScreenSizeChanged() that was not needed.
+Changed class IniFile to support hex constants when reading integers from the
+ini file (functions ReadInt and GetInt).
+Changed class StringParser in module strparse to allow hex and octal values.
+Added support for big endian IEEE doubles in modules cpucvt and stream.
+
+04.07.95:
+Included string.h instead of mem.h/memory.h where possible, because including
+string.h does not need a #ifdef <OSTYPE>.
+Removed a conditional include of unistd.h where stdlib.h is sufficient.
+Removed the target specific assembler code from the crc modules.
+
+05.07.95:
+Worked around a gcc bug (deletion of temporaries) in IniFile::SetupIndex.
+
+11.07.95:
+Fixed two typos in module cpucvt that were not noticed because the code was
+not compiled on little endian cpus (thanks to Lutz Vieweg).
+
+12.07.95:
+Created a memory checker module memcheck. This module overloads the global
+operators new & delete and checks for memory overwrites, duplicate calls to
+delete etc.
+
+15.07.95:
+Added functionality to module memcheck. Enabling the memory checker and the log
+feature at termination is now possible via two environment variables. Made the
+block collection static thus enabling checking earlier in the startup phase.
+Added calls to FreeMsgBase() and FreeAppMsgBase() to Program::Cleanup(). After
+this change, the amount of allocated blocks on program termination dropped
+to 0.
+Fixed a memory leak in module inifile: The collection containing the starting
+offsets of the sections has not been freed in the destructor.
+Added a destructor to class Thread to delete the registered keys on program
+termination.
+
+31.07.95:
+Fixed a bug in os2src/sercom: The code did not support com ports with 16450
+chips (it assumed a 16550 on each port).
+
+01.08.95:
+Changed the os2 and dos keyboard modules to regularily call App->Idle() when
+waiting for a key (the linux version already supports this as it is needed
+for handling SIGWINCH).
+
+02.08.95:
+Added member functions named Replace() to class String.
+
+03.08.95:
+Changed the waiting time for keys under linux to 100ms.
+
+06.09.95:
+Added an additional parameter to the constructor of class StringParser. This
+parameter has a default value, so existing code does not break.
+
+07.09.95:
+The linux screen module saves the current cursor position and restores it,
+after doing a screen update. Without this, the cursor will get lost if some
+background task does screen output while the program awaits user input with
+a visible cursor.
+
+10.09.95:
+Added a new function GetToken() to class StringParser.
+Added a call to String::InputCvt() to class FileViewer, so input lines are
+correctly converted to the internally used character set.
+
+13.09.95:
+In menue.cc: included stdlib.h instead of malloc.h as the latter is flagged
+obsolete under FreeBSD.
+
+14.09.95:
+Fixed a bug in module stream: The destructor of class FileStream tried to close
+the file, even if the FILE* pointer was NULL. Linux, OS/2 and DOS accepted a
+call to fclose with a NULL pointer - FreeBSD crashed the program with a
+SIGSEGV.
+
+15.09.95:
+Renamed the function parameter of the manipulator support function in module
+stream.cc since some of the header files of FreeBSD do strange #defines...
+In module memcheck: Casted the parameters to the fprintf call in
+MemLogBlocksInUse to avoid gcc warnings.
+#ifdef'ed out function FormatStr (const String&, ...) for FreeBSD (cannot be
+used with Watcom-C anyway, so maybe dropping the function will be better?
+
+19.09.95:
+Created a generic *nix version. Some of the linux and bsd files now reside
+in the generic directory if they can probably be compiled under more than
+one *nix operating system. New #define GENERIC_UNIX, some changes on the
+sercom module (made the result of some functions explicitly operating system
+dependent). Makefile for generic unix (makefile.gen).
+
+23.09.95:
+Dropped the virtual function _Collection::CollError since it did not fit
+into the error handling strategy (it never did that and has not been used
+anywhere). Replaced it by calls to FAIL in the appropriate places.
+Fixed a bug in modules dossrc/_sercom.asm and dos4gsrc/_sercom.asm:
+The TX FIFO size has been incorrectly set.
+There is another bug in this module, that is still unfixed: There is no
+hw handshaking for incoming chars, even if the code should use handshaking.
+This may cause buffer overruns if the receiver is not fast enough. I'll fix
+this in the near future.
+
+01.10.95:
+Replaced includes of malloc.h in the linux sources with stdlib.h (the proper
+place for malloc & friends).
+Some minor changes in bsdsrc/screen.cc: Removed Linux remnants.
+Changes {bsd, linux, unix}src/screen.cc: When determining the character set
+used, first check CL_CTYPE, then (if the former does not exist), check
+LC_CTYPE.
+Added the missing hardware handshaking to the assembler sercom modules in
+dossrc and dos4gsrc. Not tested, I hope it works.
+
+10.10.95:
+File errlog.h needed an additional "#include <stdio.h>". Allow information
+windows to be closed with enter (in addition to esc).
+Fixed a bug in module window.cc: Window::CWrite had a "one less" error, the
+rightmost char in a window was never drawn (when using CWrite).
+
+14.10.95:
+Split the screen modules for the unix operating system in two parts, a generic
+one and an os specific one. Changed the names of the environment variables
+from CL_* to SPUNK_*. Changed Screen::IsColorMode to Screen:IsColor to match
+Screen::IsConsole.
+
+15.10.95:
+Added a new option to MemCheck: MemFill will fill memory blocks before and
+after use (the latter is available only if MemCheck is also true). MemCheck
+now checks for out of memory conditions in any case. Added a new response
+reEnd to ResponseWindow.
+New option for class StringParser: Accept a '.' as a decimal point even if
+the local symbol is different. This option is used now in class IniFile,
+so any notations of floats in inifiles are accepted.
+
+23.10.95:
+Fixed a bug in dos4gsrc\_sercom.asm and dossrc\_sercom.asm: The _TXClear did
+not work correctly. More minor changes in these modules.
+
+26.10.95:
+As bsdsrc/sercom.cc has been pretty generic, added some debugging stuff and
+moved it to unixsrc/sercom.cc. Added also error checking to linuxsrc/sercom.cc.
+
+10.11.95:
+Added explicit template instantiations #ifdef'ed out by the define
+EXPLICIT_TEMPLATES. This is a rather ugly hack that is needed for compatibility
+with the current versions of gcc. Thanks to Ralf W. Stephan
+(ralf@ark.franken.de) for working out the needed statements.
+
+18.11.95:
+Added more explicit templates. Fixed a bug in module program.cc: the
+replacement of the Fail vector has been done too late, errors when creating
+the main menue or the statusline caused a program abort but no console and
+keyboard reset. Again, thanks to Ralph W. Stephan.
+
+19.11.95:
+Ported spunk to djgpp. As there is now another DOS extender, renamed the
+#define DOS4G to DOS32 and added compiler specific code in a few (too many)
+places. Renamed the directory dos4gsrc according to the new name.
+
+21.11.95:
+Cleaned up the sources and directories. Changed dossrc\filesys.cc, added two
+new functions (FileSysGetDisk and FileSysSetDisk) and rewrote the function
+CurrentDir to avoid lots of #ifdefs (djgpp needed a completely different
+code). There's still some work to do with the directory structure - maybe
+another time.
+
+26.11.95:
+Fixed some typos in spunk.doc.
+
+27.11.95:
+Fixed a bug in the OS/2 version of module filesys: Some functions did not work
+when called with a drive identifier of a drive with removeable media that was
+not ready.
+Worked around a bug in the watcom compiler library: The opendir does not set
+errno to a valid error code on failure.
+DOS and OS/2 modules still used CL_LANGUAGE and CL_COUNTRY instead of SPUNK_*.
+
+28.11.95:
+Changed the buffer parameter in ComPort::TimedSendBlock and TimedReceivceBlock
+from a char pointer to void.
+
+29.11.95:
+Added the ability to handle control characters in a special way to class
+TextFileStream. The default for this handling is to replace tabs by sequences
+of spaces (as before), but to ignore all other control chars. The problems
+when viewing binary files under Linux with the FileViewer should now be gone.
+Fixed the CHECKs in the linux sercom module to print the real error code
+when an error occurs (used ZCHECK instead of CHECK).
+Added some more explicit templates for GNU compatibility.
+
+30.11.95:
+Fixed a buf in the resource editor, function items/order: When selecting an
+item twice, the editor crashed with an error message.
+Added another constructor to class CharSet.
+Added an general purpose empty string variable to module str.
+Added a new function GetString to class StrParser.
+
+05.12.1995:
+Added a parameter for functions Time::TimeStr and Time::DateTimeStr. The
+(flag) parameter has a default value that results in the same behavior
+than the old function. By setting the flag to zero, the seconds ore omitted
+from the strings.
+
+06.12.1995:
+Changed some data types (mostly signed int <--> unsigned int) to avoid
+warnings from gcc 2.7.x.
+Added an explicit cast from NULL to the return type of some functions for the
+same reason as above. This seems to be a gcc bug (gcc handles the literal 0
+as (void*)0 and warn's about converting implicitly from void* to a typed
+value), but anyway, the casts do no harm.
+Removed the function "String FormatStr (const String&, ...), since calling
+va_start with a reference argument is not supported with most compilers.
+
+11.12.1995:
+Added a cursor move to position 0/0 to the destructor of the screen object
+in module unixsrc/screen2.cc. Obviously some terminals do not move the cursor
+home when the terminal reset sequence is sent (this may also be caused by a
+bad termcap entry, but anyway, moving the cursor explicitly does no harm).
+
+16.12.1995:
+Deleted function _Collection::operator []. Made most of the public member
+functions of class Collection virtual to allow overloading by derived classes.
+
+20.12.1995:
+Reworked the resource module:
+Documented the member functions in the header file.
+Deleted the member function GetName() since it has th same function as KeyAt().
+Changed the function ResourceFile::Get (const String&). Previously this
+function searched for a national version of the resource. This does not make
+sense, since it is up to the application to do this, the ResourceFile should
+implement just the basic services. If the ResourceFile class has too much
+specialized functionality (like searching for national version of data), it
+is much less usable for a broad range of tasks. Changed Program::LoadResource
+to do the search instead.
+New function ResourceFile::FindKey (const String&).
+Class MemoryStream is now itself streamable (this is the first class with
+multiple inheritance in the library).
+New string functions ShowControls and HideControls that recode a string,
+showing control characters by replacing it with the literals, or hiding the
+same string literals.
+
+21.12.1995:
+Some changes in the new ShowControls and HideControls functions. Support for
+an internal used character sequence: '\c': Center the line in an window.
+Rewrote SplitMsg to take advantage of those changes. SplitMsg will no longer
+use the chars '|' and '^' to mark newlines and centered lines, it will use
+'\n' and '\c' instead. The old solution has lead to lots of trouble since
+the CHECK and PRECONDITION macros often tried to output C statements that
+contained '|' chars, leading to chaotic window contents... The new solution
+is much cleaner, but beware: THIS IS AN INCOMPATIBLE CHANGE! YOU HAVE TO
+CHANGE MESSAGES THAT USE THE '|' and '^' FEATURE.
+
+23.12.1995:
+Worked on a X backend for spunk.
+
+25.12.1995:
+Added a function GetProgName to module progutil.
+Splitted the screen mode constants from file screen.h and put it in a separate
+header file, scrmodes.h that is included by screen.h.
+Fixed a bug in the DOS & OS/2 versions of Screen::Translate().
+More work on the X backend.
+Winattr is not longer a system specific module (all winattr modules, even the
+one for X have been identical).
+New header file wincolor.h that has the color constants formerly in winattr.
+
+26.12.-29.12.95
+Finished the X backend. Needs still some fine tuning, but works now.
+Added a new video mode vmAsk, added a new window item TextItem in it's own
+module, changed the file selector to use this item. Many more small changes
+to allow the user to resize the application window at almost any time (as
+needed for the X backend).
+
+03.01.1996:
+Updated the makefiles and renamed them. The subdirectory is now named "make",
+the names are *.mak instead of makefile.*, so there are now 8 characters to
+describe the contents instead of three.
+
+05.01.1996:
+The default action for a Window in case of a screen size change is, to move
+itself so that at least the upper left corner is inside the screen area.
+
+06.01.1996:
+Input and output conversion for message collections got lost when adding the
+conversion of control chars.
+Added a virtual function CanClose to class ItemWindow.
+Changed the construction of some messages in msgcoll.cc and program.cc to
+avoid a gcc bug.
+TextItems are now inactive by default (they were active previously).
+Changed the initialization in Program::Program again to make shure, the
+terminal is not left in an undeterminate state when exiting because of an
+error while initializing.
+Made function Window::MoveResize virtual.
+Added a virtual function Browse to class ItemWindow. This function should
+display the window contents in a suitable manner.
+Changed class FileViewer to be a descendant of class ItemWindow instead of
+class Window. Changed the Browse function of the file viewer so that it matches
+the definition from its new base class.
+
+12.01.1996:
+Added a new function Find() to class SortedCollection.
+
+13.01.1996:
+Added a new class RegularTask (module regtask) plus some support routines in
+class Program.
+
+14.01.1996:
+Minor changes in class _Collection: Functions GetItem and PutItem now assume
+that the object is derived from class Streamable and act accordingly instead
+of calling ABSTRACT.
+
+15.01.1996:
+Moved function Browse completely into class ItemWindow. Added virtual functions
+HandleKey and GetStatusFlags. The former has already been in class FileViewer,
+the latter has also been in class FileViewer and has been called GetStatusString
+with different calling conventions. THIS IS AN INCOMPATIBLE CHANGE!
+Removed Browse from class FileViewer, changed FileViewer::HandleKey and
+FileViewer::GetStatusFlags.
+Changed dossrc/delay.cc to include progutil.h instead of program.h (use Idle()
+instead App->Idle()).
+
+27.01.1996:
+Changed the CleanPath function in module filepath to accept the tilde as a
+synonym for the users home directory under the unix like operating systems.
+New function MakeAbsolute to make a filename absolute.
+
+28.01.1996:
+Made the Streamable parameter in ResourceFile::Put const. Made the Streamable
+parameter in function GetSize (module nullstrm) const.
+
+01.02.1996:
+Fixed a bug in dossrc/sercom.cc: The variables for TXBufSize and RXBufSize have
+been used uninitialized resulting in random buffer sizes between 64 and 4096
+bytes after calling the constructor. In addition to that, SetBufferSize did not
+set the buffer sizes in the ComPort structs, resulting eventually in undefined
+behavior. The last one is also an error in dos32src/sercom.cc.
+Thanks to Juergen Schick for the hint.
+
+03.02.1996:
+Added code to lock the interrupt handler in memory (module dos32src\sercom.cc)
+and used another way to set the interrupt vector in dos32src\_sercom.asm.
+This may improve stability under Windows.
+Changed the position of class MemoryStream and class Stream in the object
+hierarchy since g++ does not cope with the multiple inheritance used in class
+MemoryStream. Removed the MI from class MemoryStream and made class Stream a
+descendant of class Streamable. I'm not happy with this, but is was the
+simplest way to avoid the g++ bug.
+Changed the macro name for registering a class from __link to LINK since __link
+is a reserved name (all names having two underscores and all names beginning
+with an underscore and a small letter are reserved for the C library).
+Thanks to Heiko Eissfeldt (heiko@colossus.escape.de) for pointing this out.
+
+09.02.1996:
+Rearranged some code in FSearch (module filepath).
+
+02.03.1996:
+Added a function StreamableID to template class ListBox that calls ABSTRACT.
+Otherwise it is possible to store class ListBox into a stream but this will
+not work since the needed functionality (derived from class WindowItem) is
+not there. With the new function the program will no longer crash but display
+"Call to abstract function".
+Fixed a bug in the Load and Store functions of class ListBox: The inherited
+functions (those of class WindowItem) have not been called.
+Fixed a bug in ItemWindow::Browse: The selected item should be deselected
+after Browse.
+Added two function for enabling/disabling menue commands to class program and
+to module progutil. These functions are currently empty.
+
+03.03.1996:
+Fixed a bug in module listbox: The variable ItemWidth has not been set
+correctly, leading to undefined behaviour after a load.
+
+08.03.1996:
+Changed the working of ComPort::DTROn in both DOS modules. The function
+activated both, RTS and DTR and will now activate DTR and eventuelly RTS
+(if handshake == (M)odem).
+Fixed some oddities in the linux keyboard and screen drivers. The functions to
+determine the screen size and detect the console did not use the correct file
+despriptors (stdin instead of stdout), which lead to unwanted behaviour if
+standard input was not a console tty.
+Rewrote the memcheck module to be as independent as possible from other stuff.
+Memcheck does no longer use any static objects and can be used without clashes
+with other static objects now (it is also somewhat slower now, but its just a
+debugging tool...).
+
+13.03.1996:
+Changed the bevavior of the DTROn and DTROff functions of class ComPort (again).
+They will now follow the behavior of the function for the other operating
+systems. That is: Calling Open() will activate the RTS (but not DTR) line if
+a modem connection (hardware handshake) is enabled. Otherwise the Open() will
+leave the RTS and DTR lines inactive. DTROn() and DTROff() will only change the
+state of the DTR line.
+There is now another pair of functions, RTSOn/RTSOff to change the state of the
+RTS line. Since the RTS line is needed for handshaking if hardware handshake is
+enabled, it is not allowed to call the functions in this case.
+Added the new functions also to the linux sercom module.
+Changed (after a look into the kernel sources) the DTROn and DTROff functions
+in the linux sercom module because they suffered from race conditions.
+Added the same modifications to the generic unix module. I cannot test this
+now, just hope it works...
+
+24.03.1996:
+Implemented an event mechanism. Added files: event.h event.cc eventid.h.
+Removed EnabledCommand/DisabledCommand and the functions for handling regular
+tasks from class program since they are not needed in the presence of event
+handling. Deleted fifo.h as this module has been superseeded by circbuf.h.
+Added the winmgr module to the spunk library (has been in use in some
+applications until now).
+
+25.03.1996:
+Made ItemWindow a descendant of class EventHandler. Added some more util
+functions to module progutil.
+Added Load/Store capability to class FileViewer.
+
+28.03.1996:
+Fixed a bug in the memcheck module: The block array may not be freed in the
+exit function since the startup code may release memory blocks later.
+Fixed a bug in class EventHandler: The root node may not be a real node but
+must be a pointer. Otherwise we get problems since the root node must be
+initialized first and this conflicts with object of class EventHandler that
+are also static.
+
+06.04.1996:
+Changed the order of base classes in class Program to work around a gcc bug.
+
+11.04.1996:
+Added a new function GetFile to class FileStream (thanks to Ralf Stephan,
+ralf@ark.franken.de for the suggestion).
+
+12.04.1996:
+Added a #define to module filecoll to avoid warnings because of unreachable
+code.
+
+20.04.1996:
+Changed frame.cc to include the SimpleFrame that has already been used in a
+few other modules. Also put in there a replacement for the frame characters
+when the KOI-8r character set is active (thanks to Michael A. Rodiono,
+marod@piglet.cnit.nsk.su).
+Finished the COPYING.TXT file, spunk now has real copying conditions (whow!).
+Added a sample directory and Ralphs std application as a first sample.
+
+21.04.1996:
+Made three utility function of class Window protected instead of private,
+otherwise it is very difficult to override the frame drawing functions.
+
+24.04.1996:
+Made the handling of the values of SPUNK_CTYPE and LC_CTYPE somewhat relaxed,
+hopefully now all variants of "ISO-8859-1" are recognized.
+
+26.04.1996:
+Function FileSysCurrentDir did not convert the directory to lower case.
+
+01.05.1996:
+Removed the code to map a keyword into a number given by a list of keywords/
+numbers as a string from module environ and put it into module str (the
+function is now called MatchKeyword). Added the capability to use wildcards
+inside the keyword list. Added functions to look for key values to module
+inifile.
+
+03.05.1996:
+Module charset: Changed one constructor, added another one to initialize the
+CharSet from a string. Changed all unsigned char parameters to char. Fixed
+to range bugs.
+Module chartype: Changed the WhiteSpace CharSet to use the changed constructor.
+Module strparse: Changed the StringParser class to use class CharSet for all
+operations where a set of characters is needed instead of using a string.
+Added a second argument (with a default value) to GetToken, it is now possible
+to specify the characters that separate the tokens. Made the WhiteSpace
+variable a non-static member of class CharSet which is initialized from the
+global WhiteSpace in chartype. There is currently no way to change this
+variable, this may be added if needed.
+Module str: New member function Remove() to remove characters from a string.
+Deleted the superflous Set functions from the header file (they had no
+implementation anyway).
+
+04.05.1996:
+Added a new module, wildargs, that is used in DOS and OS/2 only. It contains
+a function to expand the argument vector and is called from the constructor
+of class Program. So any spunk program accepts now wildcard arguments (they
+are automatically expanded) but currently the function under DOS and OS/2 is
+slightly different from the *nix operating systems (escaped wildcards are
+not accepted for example). As an addition, a response file (syntax "@FILE"
+may be used, it's contents are also placed into the argument vector.
+
+08.05.1996:
+Added defines for DOSLIKE_OS and UNIXLIKE_OS in machine.h. Simplified and
+corrected some functions in filepath.cc.
+Extended the Match function in module str to accept a list of substrings as
+part of the pattern string (syntax is "{aaa,bbb,ccc}"). Extended the
+FHasWildcards function to handle the characters '{' and '}' as wildcards.
+Extended the FileEdit class to accept '{', '}' and ',' if wildcards are
+allowed.
+
+09-16.03.1996:
+Many smaller changes. Fixed a bug in ItemWindow::PlaceNear(), detected that
+the Match function is broken and will need a rewrite. Worked on the item edit
+capability of the resource editor.
+
+18.05.1996:
+The PMODE/W DOS extender does not support function 65h of int 21h (get extended
+country information). Because of this, the call returned invalid data and the
+country information could not get retrieved when running with PMODE/W under
+pure DOS. Rewrote the DOS32 specific module to simulate the real mode in via
+DPMI function 0x300 to remove this problem.
+
+One day:
+Added changes and makefile for NetBSD/Amiga. Thanks to Ralph-Thomas Aussem
+(1aussem@informatik.uni-hamburg.de) for the work.
+
+16.06.1996:
+Fixed a bug in String::PSZ(char*, size_t): Since the function used strncpy,
+it was not guaranteed that the resulting string was zero terminated.
+
+20.06.1996:
+Added the changes and the makefile for the Solaris/X Version. Thanks to
+Martin Helmling (mh@octogon.de).
+
+23.06.1996:
+Fixed a bug in MatchKeyword (module str).
+
+01.07.1996:
+Allow a NULL pointer for the initialization of SubMenueItem. This makes
+it possible for the resource editor to create "empty" SubMenueItems and
+assign the menu later.
+
+22.07.1996:
+Added some changes from Dr.-Ing. A. Irmer (dc1p@risc1.rhein-main.de) to avoid
+warnings from gcc 2.7.2.
+Added support for a marked line in class FileViewer (suggestion and initial
+coding by Ralf W. Stephan, ralf@ark.franken.de).
+
+04.08.96:
+Removed a bug from CleanPath (module filepath): The function did not return
+an absolute path in all cases on systems supporting drives.
+
+17.08.1996:
+Fixed a bug in OffOnItem::Load and NoYesItem::Load. The load functions did
+reset the toggle string and value according to the new national conventions,
+but did not set the length correctly
+
+18.08.1996:
+Added two additional functions Low() and High() to class BitSet. Removed an
+error from StringParser::GetToken: An empty string was not flagged as an
+error. Added a function to class Time to fetch a broken down time with one
+call.
+
+19.08.1996:
+Removed a bug from String::Remove. If the rmTrailing flag has been set,
+sometimes one character more than needed has been deleted.
+
+01.09.1996:
+Incorporated changes from Andreas Irmer (dc1p@risc1.rhein-main.de) to suppress
+some warnings when compiling with gcc 2.7.2. Modules changed: memcheck.cc,
+charset.cc, fviewer.cc, linuxsrc/kbd.cc and unixsrc/screen2.cc.
+
+02.09.1996:
+Added the changes for the Microsoft NT port from Michael Peschel
+(mipe@ibb.schwaben.com).
+
+27.09.1996:
+New classes for random number generation: BaseRNG and RNG, implemented in
+module rng.
+Added an #include <errno.h> in syserror.h to remove the need for including this
+file each time, syserror.h is included. This is error prone when porting, since
+many libraries define errno in stdlib.h, but some don't, so the source may
+compile on one system and not on another.
+
+20.10.1996:
+Added functions to class Stream to read and write a stream as a stream of bits.
+
+24.10.1996:
+Added a Clear function to class MemPool and class StringPool. Added a Use
+function to class MemPool and class StringPool which uses an existing buffer.
+Changes in module memcheck: Used a dummy class in addition to a Watcom specific
+pragma to assure that the initialization of the memory checker is executed as
+early as possible. This removes a problem with static objects that were
+initialized before the memory checker. Whenever those objects tried to release
+memory, it was flagged as a "never allocated block" by the memory checker,
+since it was allocated before the initialization of the memory checker
+executed. THIS IS A COMPILER SPECIFIC SOLUTION, but anyway, it helps a lot
+since this is just a debugging tool.
+Changed a statement in module datetime, where a statement was hidden inside
+the PRECONDITION macro and would not expand if the macro was changed to
+nothing.
+
+28.10.1996:
+Moved some functions from the header files, where they were declared as inline
+to the corresponding .cc file removing the inline declaration. The inline
+caused the linker not to include the .obj file when maximum optimization
+was enabled, since no functions inside the module were referenced.
+
+06.11.1996:
+New modules charstrm and serstrm. Fixed a bug in Program::Idle which caused
+multiple evSecondChange and evMinuteChange events to be delivered if the
+Idle function was called from inside an event handler again. Imported the
+whole stuff into CVS.
+
+24.11.1996:
+Added a 32 bit CRC module. Some cosmetic changes on the 16 bit CRC module.
+Changed the CRCStream class to use the 32 bit CRC.
+Changed module syserror to use the ANSI compatible function strerror instead
+of the less portable sys_error. This removes also a compiler error on some
+architectures regarding the assignment of const to non-const.
+
+29.11.1996:
+Make the parameter to GetCRC const. Create another function that does not take
+a pointer but a (const) reference. Do not use Put() to calculate the CRC but
+use operator << (which invokes Load()) instead. This extends the usability to
+objects that have a Store() method but aren't registered (do not have a stream
+id).
+Changed _Collection::Load: The build constructor will clear Items. So, when
+Load is called with Items not NULL, someone called Load with an already
+initialized object instance. To mimic the behaviour of the builtin types,
+delete all items and the items space before loading. This allows to call Load()
+with an existing object, the old data will be replaced by the data from the
+stream.
+
+30.11.1996:
+Added "const T* operator [] const" to class Collection.
+
+01.12.1996:
+Added a function Add() to class String. Changed the default pad type from
+Left to Right.
+
+08.12.1996:
+Complete rewrite of the CircularBuffer class. It has now a second template
+argument (the size) and is much more streamlined than before. The Put() and
+Get() member functions are now thread safe, that is, as long as one thread
+uses Put() and another Get() there are no concurrency problems.
+
+10.12.1996:
+Small cosmetic changes (I was searching for a bug that was no real bug but
+an alignment problem).
+
+18.12.1996:
+Stream::Error will call FAIL on stGetError and stPutError if no user defined
+error function handler is installed.
+Fixed an error in str.h: The operators == and != used NLSCmpStr to compare
+two strings, but NLSCmpStr uses a collation table that maps lower case to
+upper case characters (this causes also an error in the operators >, < etc.!)
+Fixed the former functions by using strcmp instead of NLSCmpStr.
+
+28.12.1996:
+Reset the cursor position to zero in Window::Clear().
+
+29.12.1996:
+Added a new flag elTruncate for class IniFile.
+
+30.12.1996:
+Fixed a bug in the last change (class IniFile).
+
+31.12.1996:
+Added function GetSize() to class Screen. Made some functions of class Screen
+const that do not change internal variables.
+Changed the handling of screen size changes from a call to a function of the
+root window to an event that is posted. The root window has an event handler
+thet calls the ScreenSizeChanged function. This will enable other parts of the
+application to react to size change events.
+Made the classes Point and Rect descendants of class Streamble to allow them
+to be used when delivering events and streamline the code (5 years ago, when
+spunk was created, it was a performance decision to make Point and Rect
+independent classes). The representation of the classes inside of stream data
+has *not* changed.
+
+02.01.1997:
+Added a new module task that implements a class for a operating system
+supported thread. Currently there are implementations for OS/2 and NT.
+
+03.01.1997:
+Added a semaphore module; current implementations are for OS/2 and NT. Fixed a
+bug in the task modules, the task handle structure was not freed.
+
+25.01.1997:
+Fixed a bug in module menuitem that was caused by changing the default pad
+type (change from 01.12.96).
+
+26.01.1997:
+Added a new method, MoveResizeAfterLoad to class Window. The TopMenueBar class
+will use this method to reposition itself after Load().
+The resource editor will now support the creation of TopMenueBar objects, so
+they must no longer be constructed "manually" at runtime.
+Fixed a bug in module program: When the main menu was loaded from the resource,
+and the main menu contained the names of keys, the program message base was
+loaded in between, changing the stream file pointer.
+
+29.01.1997:
+Added a check for kbNoKey in Thread::RegisterKey (yes, I'm learning from my
+errors :-)
+
+30.01.1997:
+The "Custom charset" feature from "Edit item" in the resource editor seems to
+have vanished. Reimplemented it.
+

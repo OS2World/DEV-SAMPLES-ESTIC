@@ -1,0 +1,96 @@
+;
+; Beispiel Cron Datei
+;
+; Jede Zeile ist entweder leer, ein Kommentar, oder wie folgt aufgebaut:
+;
+;   Minuten Stunden Tag Monat Wochentag Kommando [Argumente]
+;
+; Die Wertebereiche für die einzelnen Felder sind:
+;
+;  Minute	0..59
+;  Stunde	0..59
+;  Tag		1..31
+;  Monat	1..12
+;  Wochentag	0..6	(0 = Sonntag)
+;
+; Das Kommando wird dann ausgeführt, wenn die aktuelle Zeit der Zeit
+; entspricht, die in den ersten 5 Felder angegeben ist. Dabei handelt es
+; sich um eine UND Verknüpfung, d.h. wenn Tag=13 und Wochentag=Freitag,
+; dann wird das Kommando an jedem Freitag den 13. ausgeführt.
+;
+; Die Angabe in den ersten 5 Feldern beschränkt sich nicht nur auf einzelne
+; Werte, sondern auch auf mehrere Werte, oder Bereiche. Alle folgenden
+; Angaben sind korrekte Angaben für das Minutenfeld, für die anderen Felder
+; gilt adäquates:
+;
+;   13		Ausführen wenn Minute = 13
+;   13,15	Ausführen wenn Minute = 13 oder 15
+;   13-15	Ausführen wenn Minute = 13, 14 oder 15
+;   5-20/5	Ausführen wenn Minute = 5, 10, 15 oder 20
+;
+; Weiterhin ist für ein Feld die Angabe '*' möglich, mit der Bedeutung
+; "jede volle ...".
+;
+; Folgende Kommandos werden unterstützt:
+;
+;   PrintCharges <Dateiname>	# Speichert die aktuelle Gebühren
+;   ClearCharges		# Setzt die Gebühren zurück
+;   LoadConfig <Dateiname>	# Lädt neue Einstellungen in die Istec
+;   Ring <Gerät> <Dauer>	# Läßt den Apparat für <Dauer> Sekunden klingeln
+;   ReadCronFile		# Cron Datei neu einlesen
+;
+; <Dateiname> kann - äquivalent zum Dateinamen für das Gebühren-Logfile -
+; mit Abkürzungen für Zeitangaben erweitert werden:
+;
+;	%%	für das Zeichen '%'
+;	%a	Wochentag, kurz
+;	%A	Wochentag, lang
+;	%b	Monat, kurz
+;	%B	Monat, lang
+;	%c	Zeit+Datum
+;	%d	Tag des Monats (01-31)
+;	%H	Stunde (00-23)
+;	%I	Stunde (00-12)
+;	%j	Tag des Jahres (001-366)
+;	%m	Monat (01-12)
+;	%M	Minute (00-59)
+;	%p	AM oder PM
+;	%S	Sekunde (00-59)
+;	%U	Kalenderwoche, Sonntag erster Wochentag (00-53)
+;	%w	Nummer des Wochentags (Sonntag = 0)
+;	%W	Kalenderwoche, Montag erster Wochentag (00-53)
+;	%x	Datum
+;	%X	Zeit
+;	%y	Jahr, zweistellig (00-99)
+;	%Y	Jahr, vierstellig
+;
+; Achtung: Alle Bezeichner (für Monat, Tag usw.) sind englisch!
+;
+;
+; Noch ein paar vollständige Beispielangaben (das ';' zu Beginn der Zeile fehlt
+; natürlich bei einer "echten" Angabe).
+
+; Apparat 21 morgens um 8 Uhr eine Minute klingeln lassen
+;0 8 * * *	 Ring	 21 60
+
+; Apparat 21 an Wochentagen um 8 Uhr eine Minute klingeln lassen
+;0 8 * * 1-5	 Ring	 21 60
+
+; Am Monatsende die Gebühren speichern und rücksetzen. Die Kommandos werden
+; in genau der Reihenfolge ausgeführt, in der sie in der Datei vorkommen
+; (einzige Ausnahme davon ist ReadCronFile, der Befehl wird ganz zum Schluss
+; ausgeführt), d.h. die beiden folgenden Zeilen speichern erst die Gebühren
+; und setzen sie dann zurück.
+;0 0 1 * *	 PrintCharges	 charges.dat
+;0 0 1 * *	 ClearCharges
+
+; Jede Stunde das Cron File neu einlesen
+;0 * * * *	 ReadCronFile
+
+; Wochentags, abends um 18 Uhr eine neue Konfiguration für die Nacht einlesen
+;0 18 * * 1-5	 LoadConfig nacht.ic
+
+; Werktags morgens um 7 Uhr die Konfiguration wieder auf "Tag" stellen
+;0 7 * * 1-5	 LoadConfig tag.ic
+
+

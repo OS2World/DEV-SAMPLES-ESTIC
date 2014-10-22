@@ -1,0 +1,10 @@
+*.err
+*.zip
+*.exe
+*.obj
+makefile
+Makefile
+.depend
+areacode.dat
+actest
+acvers

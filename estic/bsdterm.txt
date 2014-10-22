@@ -1,0 +1,86 @@
+From ibb.schwaben.com!wuschel.ibb.schwaben.com!seicom.de!news.uni-stuttgart.de!rz.uni-karlsruhe.de!xlink.net!howland.reston.ans.net!news.sprintlink.net!in2.uu.net!news1.digital.com!nntp-hub2.barrnet.net!nntp-hub.barrnet.net!inet-nntp-gw-1.us.oracle.com!news.caldera.com!park.uvsc.edu!usenet Tue Oct  3 21:28:59 1995
+Path: ibb.schwaben.com!wuschel.ibb.schwaben.com!seicom.de!news.uni-stuttgart.de!rz.uni-karlsruhe.de!xlink.net!howland.reston.ans.net!news.sprintlink.net!in2.uu.net!news1.digital.com!nntp-hub2.barrnet.net!nntp-hub.barrnet.net!inet-nntp-gw-1.us.oracle.com!news.caldera.com!park.uvsc.edu!usenet
+From: Terry Lambert <terry@cs.weber.edu>
+Newsgroups: comp.unix.bsd.freebsd.misc
+Subject: Re: Q: Writing to lower right of console
+Date: 2 Oct 1995 19:41:12 GMT
+Organization: Utah Valley State College, Orem, Utah
+Lines: 73
+Message-ID: <44pf8o$ap@park.uvsc.edu>
+References: <DFrvI6.8ro@wuschel.ibb.schwaben.com>
+NNTP-Posting-Host: hecate.artisoft.com
+
+uz@wuschel.ibb.schwaben.com (Ullrich von Bassewitz) wrote:
+]
+] I'm trying to port a program from linux to freebsd. Until now there is only
+] one problem:
+] 
+] If I write to the last char of the screen (the char in the lower right
+] corner), a scroll happens and my last line goes one line up, the first
+] line vanishes.
+] 
+] My program is screen oriented, it has a menu line as the first and a status
+] line as the last line of the screen. You can imagine, what happens if the
+] screen scrolls one line up when writing the status line...
+] 
+] I know, that this is not really a freebsd problem, many terminals may have
+] this too (the Linux console and xterm windows under X don't have it).
+] With a special terminal, I can tell people, that my program will
+] not support this terminal - but telling people that the console is not
+] suppported would be a very unpopular approach :-)
+
+To support the terminals that do this:
+
+1)	look for the "xn" flag in the termcap entry using the
+	tgetflag() routine.
+2a)	If the flag is set, use the current code.  The "xnwrap"
+	flag means that the cursor wraps BEFORE character 81
+	instead of AFTER character 80.  This is also called
+	"delayed wrap".
+2b)	If the flag is not set, then you will need to do the
+	following to write the last character position (SCO Xenix
+	and all Televideo sequence terminals -- like the Wyse-50,
+	the most popular one of all time -- terminals do not have
+	the xn flag set);
+	i)	Rememeber the second to last character.
+	ii)	write the last character in the second to
+		last character position.
+	iiia)	use "insert character mode" to insert the
+		second to last character in the correct
+		position.  This will force the last character
+		to the right, and put it into the correct
+		position as well.
+	iiib)	if the terminal does not support "insert
+		character mode", but supports "inseert character"
+		as an operation, then insert a character before
+		the second to last character.  This will force
+		the correct character into the last postion.
+		Then write the second to last character.
+	iiic)	if the terminal does not support either
+		"insert character mode" or "insert character",
+		then use "insert line" instead.
+	iiid)	if the terminal does not support any of "insert
+		character mode", "insert character", or "insert
+		line", then use a scroll region to implement
+		insert line.
+	iiie)	if the terminal does not support any of "insert
+		character mode", "insert character". "insert line",
+		or scroll regions, then omit drawing the last
+		character position entirely.
+
+Note that curses will implement these workarounds for you
+automatically: you should be using curses (I may be mistaken about
+curses knowing about using a scoll region to do an insert line;
+I seem to rememebr vi being stupid about this on real VT100's).
+
+
+All of the above are instances of a well known programming
+technique, the techinical name of which is "brute force".  8-).
+
+
+                                        Terry Lambert
+                                        terry@cs.weber.edu
+---
+Any opinions in this posting are my own and not those of my present
+or previous employers.
+

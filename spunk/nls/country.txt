@@ -1,0 +1,33 @@
+
+
+Country codes and availablility
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+  Country code  Name                Remarks
+-----------------------------------------------------------
+
+      001       United States
+      002       Canadian French     Not available
+      003       Latin America
+      031       Netherlands
+      032       Belgium
+      033       France
+      034       Spain
+      036       Hungary             Not available
+      038       Yugoslavia          Not available
+      039       Italy
+      041       Switzerland
+      042       Czechoslovakia      Not available
+      044       United Kingdom
+      045       Denmark             Not available
+      046       Sweden
+      047       Norway              Not available
+      048       Poland              Not available
+      049       Germany
+      061       Australia
+      090       Turkey              Not available
+      099       Asian English
+      351       Portugal            Not available
+      354       Iceland             Not available
+      358       Finland

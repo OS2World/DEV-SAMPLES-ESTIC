@@ -1,0 +1,19 @@
+ESTIC V1.50, Sourcen 31.01.97 - (C) 95-97
+Ullrich von Bassewitz <uz@ibb.schwaben.com>
+ESTIC ist ein Konfigurationsprogramm fuer
+die ISTEC ISDN-Anlagen der Firma Emmerich.
+Neben der Konfiguration der Anlage kann
+ESTIC ein Logfile ueber die ausgehenden
+Gespraeche zusammen mit Nummer/Zeitpunkt/
+Dauer/Kosten fuehren. Weiterhin ist als
+zusaetzliches "Schmankerl" fuer ISDN4Linux
+Benutzer ein ISDN4Linux Monitor integriert.
+ESTIC basiert auf meiner portablen Klassen-
+bibliothek SPUNK, deshalb sind Versionen
+fÅr DOS, OS/2, Windows NT, Linux, FreeBSD
+und diverse andere Unixe verfuegbar. Fuer
+die Unix-Versionen ist es sinnvoll, be-
+stimmte Environment-Variablen zu setzen.
+Makefiles fuer WATCOM-C und GNU-C Compiler
+sind enthalten.
+

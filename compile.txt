@@ -1,0 +1,137 @@
+
+
+		      ESTIC V 1.50, 31.01.1996
+
+	  Enhanced Supervisor Tool for ISTEC Configuration
+
+	     Copyright (C) 1995-97 Ullrich von Bassewitz
+			<uz@ibb.schwaben.com>
+
+
+
+
+Nutzungsbestimmungen und Weitergabe
+-----------------------------------
+
+Die Software (sowohl die Quellcodes, als auch die Binaries) werden ohne
+jegliche Zusagen/Garantien bezüglich Funktionalität oder Funktionsfähigkeit
+abgegeben. Weder die Autoren noch die Distributoren übernehmen eine
+Verantwortung für Schäden, die durch die Benutzung der Software verursacht
+werden.
+
+Die Software darf frei verwendet und weitergegeben werden, wobei "frei"
+ausdrücklich auch eine kommerzielle Nutzung/Weitergabe einschließt,
+*vorausgesetzt* die folgenden Bedingungen werden eingehalten:
+
+  1. Die Herkunft der Software muß - wenn überhaupt - dann korrekt
+     angegeben werden. Es ist nicht erlaubt, die Software als Werk
+     eines anderen auszugeben. Wird die Software in Teilen oder als
+     Ganzes in einem Produkt benutzt, dann würde ich mich über einen
+     Hinweis auf die Herkunft in der Dokumentation freuen. Ein solcher
+     Hinweis ist aber nicht zwingend notwendig.
+
+  2. Geänderte Quellcodes müssen deutlich als solche gekennzeichnet
+     werden und dürfen nicht ohne einen expliziten Hinweis auf die
+     durchgeführten Änderungen weiterverteilt werden.
+
+  3. Die Bedingungen über die Nutzung/Weitergabe dürfen nicht entfernt
+     oder geändert werden.
+
+
+Speziell für ESTIC gilt noch der folgende Hinweis:
+
+  * Die Bestimmungen des Datenschutzes sind zu beachten! Das
+    Logging-Feature kann speziell bei Anwendung im kommerziellen
+    Bereich gegen Datenschutzbestimmungen verstoßen!
+
+
+
+Anleitung zum Übersetzen der ESTIC Sourcen:
+-------------------------------------------
+
+Vorbemerkung:
+
+Beim Auspacken (unter DOS & OS/2 unbedingt Info-Zip's unzip mit
+Parameter -a verwenden!) werden drei Unterverzeichnisse erzeugt:
+spunk, areacode und estic. In spunk befindet sich die zugrundeliegende
+Klassenbibliothek, in estic der applikationsspezifische Code.
+Die folgenden Schritte müssen zuerst im Verzeichnis spunk, dann
+im Verzeichnis areacode, dann im Verzeichnis estic ausgeführt werden.
+
+
+0. Notwendiger Compiler ist gcc unter Linux und FreeBSD bzw. Watcom-C
+   unter DOS & OS/2.
+   Spunk selber läßt sich auch mit Borland-C übersetzen (sowohl die DOS
+   als auch die OS/2 Version), BCC hat jedoch diverse Problemchen, um die
+   ich mich bei estic nicht weiter gekümmert habe, für estic existiert
+   deshalb kein Makefile für bcc. Wer unbedingt eine Übersetzung
+   hinbekommen will sollte kurz bei mir fuer nähere Infos anfragen.
+
+1. Passendes Makefile aus dem Verzeichnis "make" nach "Makefile" kopieren.
+   linux.mak für Linux verwenden, freebsd.mak für FreeBSD usw.
+
+2. Nur für Linux & FreeBSD: File Dependencies erzeugen durch Aufruf
+   von "make dep".
+
+3. "make" eingeben. Wer wenig Zeit hat, der kann im Verzeichnis spunk auch
+   "make lib" verwenden, dann wird der Resourcen-Editor nicht erzeugt.
+
+4. Nicht vergessen: Dasselbe nochmal im Verzeichnis estic wiederholen...
+
+
+
+Sonstige Hinweise:
+------------------
+
+Die Übersetzung unter Linux erfolgte mit g++ 2.7.2.
+
+  * Ich übernehme keinerlei Garantie dafür, daß sich ESTIC auch mit
+    neueren Compilern übersetzen läßt. Ich habe in der Vergangenheit
+    versucht, mit der Entwicklung Schritt zu halten und den Code so
+    zu schreiben, daß er die Fehler und Unzulänglichkeiten aller GNU-C++
+    Compiler umgeht. Da jede neue g++ Version aber neue Fehler hat, oder
+    bisher völlig legale Konstrukte plötzlich nicht mehr schluckt, ist
+    aber inzwischen zu einem solchen Aufwand geworden, daß ich beschlossen
+    habe, es sein zu lassen.
+    ESTIC *sollte* sich mit g++ 2.6.3 übersetzen lassen, evtl.
+    funktioniert das auch mit neueren Versionen (Kommentar im Makefile
+    beachten), ich übernehme aber wie gesagt keine Garantien.
+    Für Erfolgs-/Mißerfolgsmeldungen bin ich dankbar, definitive
+    Anpassungen gibt's erst, wenn ich selber den entsprechenden Compiler
+    verwende.
+
+  * ESTIC enthält z.T. unsinnigen Code um einige gcc Warnungen abzustellen.
+
+  * Einige Warnungen, speziell bei Bibliotheksfiles ließen sich auch durch
+    wildeste Cast-Orgien nicht beseitigen. Es ist sonst nicht meine Art,
+    Code herauszugeben, der sich nicht ohne Warnungen uebersetzen läßt,
+    hier hatte ich leider keine andere Möglichkeit.
+
+
+FreeBSD:
+
+  * Die Übersetzung erfolgte unter FreeBSD 2.1.0 mit g++ 2.6.3. FreeBSD
+    hat einige Probleme von Linux nicht, weil unter FreeBSD ein eigener
+    Linker verwendet wird, der sich - speziell bei Templates - anders
+    verhält.
+
+Die Übersetzung unter DOS bzw. OS/2 wurde mit Watcom C Version 10.6
+durchgeführt. Aufgrund von Speicherproblemen wurde die DOS Version
+diesmal als 32-Bit Version erzeugt. Wenn viel DOS Speicher zur Verfügung
+steht kann auch versuchsweise eine 16-Bit Version erzeugt werden ("make
+dos" anstelle von "make dos32" eingeben). Die als Binary gelieferte
+Version benutzt den DOS4GW Extender.
+
+Für die an spunk interessierten: Es existiert für spunk etwas ähnliches wie
+eine Dokumentation im Verzeichnis spunk/doc
+
+
+
+
+Happy hacking!
+
+
+
+	Uz
+
+

@@ -1,0 +1,98 @@
+
+               Skeleton application source for the spunk library
+
+                   Documentation written at the end of 1996
+
+                             Ullrich von Bassewitz
+                              <uz@musoftware.com>
+
+
+
+0. The modules that make up the sample skeleton application for spunk are:
+
+
+    skel.h      This file holds the class definitions for the application
+                class. It must be a direct descendant of the Program class.
+                This stuff may also go into skel.cc if it is not otherwise
+                referenced (as in the case of the skel example).
+
+    skel.cc     This is the "real" source. Most of it is framework that is
+                used in any spunk application (and in fact, the code is
+                taken from the estic application, a control software for
+                a ISDN PBX that is popular in Germany. The application runs
+                under Linux, FreeBSD, serval other Unices, OS/2, Windows-NT
+                and 16/32-Bit DOS without a change in the sources).
+
+    skelmsg.h   This holds the message base constants for the modules. There
+                is a MSGBASE_XXX constant for every module that loads
+                messages from the application resource.
+
+    skel.res    This is the base resource file from spunk with messages for
+                two languages and a menu for two languages added.
+
+
+
+1. Features used vs. Features not used
+
+The sample application doesn't use many of the features of spunk. There
+is no file viewer, no input lines and other menu stuff, no stream I/O, no
+serial I/O, no use of the dynamic data structures, spunk offers - and so on.
+
+On the other side, even the skeleton application has some of the basic spunk
+features:
+
+  * It supports multiple languages. Try
+
+        SET SPUNK_LANGUAGE=1
+
+    or
+
+        SET SPUNK_LANGUAGE=2
+
+    or whatever is the appropriate command to set environment variables
+    on your operating system.
+    You will get different menus each time, since the resources are loaded
+    from the resource file. And the loader automatically favours localized
+    resources over generic ones as described in the spunk.doc file.
+
+  * Use SPUNK_COUNTRY=xxx to use other country settings (under DOS, OS/2
+    or NT, the default setting is read from the operating system and should
+    be ok, with Unix this is somewhat more a problem, so the SPUNK_COUNTRY
+    environment variable may be used).
+
+  * All resources are external to the application. Want to change the text
+    of the ending menu? You don't like the copyright string? Start up resed
+    (the resource editor), load the resource into the editor and change it
+    to your liking. There is no reason to recompile your application, just
+    to fix some typos or change the default selection for a menu.
+
+
+
+X. About spunk
+
+It is now nearly two years after I wrote the original spunk.doc file.
+I (and others) have written many programs using spunk. Here are some
+of my experiences with the library:
+
+
+  * Spunk was developed for applications with not too much user interface.
+    It is possible to write nearly any interface with spunk, but when the
+    UI gets bigger and bigger, there are usually better tools than spunk
+    to write your application.
+
+  * Spunk was developed for technical software - and this is, where it
+    really shines. Small to middle sized user interfaces (that are the
+    usual case with technical software) are build very rapidly and give
+    your application a professional touch. Your data sampling app (or
+    whatever) will look *much* nicer with a colorful screen with two
+    or three status windows. Having a few status windows and a logfile is
+    usually done in less than one hour of work.
+
+
+
+
+  * If you know, you have to support more than one operating system, you
+    will
+
+
+

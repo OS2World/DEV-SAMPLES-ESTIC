@@ -1,0 +1,123 @@
+Note: Objects marked with * are template classes
+
+
+
+Point
+
+Rect
+
+EventHandler
+
+Object --+-- Stream --+-- NullStream ----- CRCStream
+	 |	      |
+	 |	      +-- FileStream ----- TextFileStream
+	 |	      |
+	 |	      +-- MemoryStream
+	 |
+	 +-- StreamableClass
+	 |
+	 +-- Streamable --+-- Container
+	 |		  |
+	 |		  +-- ResourceIndex
+	 |		  |
+	 |		  +-- _Collection ----- *Collection --+-- *SortedCollection --+-- StringCollection
+	 |		  |				      |			      |
+	 |		  |				      |			      +-- MsgCollection
+	 |		  |				      |			      |
+	 |		  |				      |			      +-- ResourceCollection
+	 |		  |				      |			      |
+	 |		  |				      |			      +-- StreamableClasses
+	 |		  |				      |			      |
+	 |		  |				      |			      +-- KeyMapper
+	 |		  |				      |
+	 |		  |				      +-- Palette
+	 |		  |
+	 |		  +-- *MemPool
+	 |		  |
+	 |		  +-- StringPool
+	 |		  |
+	 |		  +-- String ----- Message
+	 |		  |
+	 |		  +-- Window --+-- StatusLine ----- BottomStatusLine
+	 |		  |	       |
+	 |		  |	       +-- ItemWindow --+-- GenericMenue --+-- Menue
+	 |		  |	       |		|		   |
+	 |		  |	       |		|		   +-- MenueBar ----- TopMenueBar
+	 |		  |	       |		|
+	 |		  |	       |		+-- FileViewer
+	 |		  |	       |
+	 |		  |	       +-- RootWindow
+	 |		  |
+	 |		  +-- WindowItem --+-- MenueItem --+-- SubMenueItem ----- MenueBarItem
+	 |		  |		   |		   |
+	 |		  |		   |		   +-- MenueLine
+	 |		  |		   |		   |
+	 |		  |		   |		   +-- EditMenueItem --+-- LongItem
+	 |		  |		   |				       |
+	 |		  |		   |				       +-- HexItem
+	 |		  |		   |				       |
+	 |		  |		   |				       +-- StringItem
+	 |		  |		   |				       |
+	 |		  |		   |				       +-- ToggleItem --+-- OffOnItem
+	 |		  |		   |				       |		|
+	 |		  |		   |				       |		+-- NoYesItem
+	 |		  |		   |				       |
+	 |		  |		   |				       +-- FloatItem
+	 |		  |		   |				       |
+	 |		  |		   |				       +-- TimeItem
+	 |		  |		   |				       |
+	 |		  |		   |				       +-- DateItem
+	 |		  |		   |				       |
+	 |		  |		   |				       +-- RStringItem
+	 |		  |		   |
+	 |		  |		   |
+	 |		  |		   |
+	 |		  |		   +-- EditLine --+-- FloatEdit
+	 |		  |		   |		  |
+	 |		  |		   |		  +-- LongEdit ----- HexEdit
+	 |		  |		   |		  |
+	 |		  |		   |		  +-- TextEdit
+	 |		  |		   |		  |
+	 |		  |		   |		  +-- TimeEdit
+	 |		  |		   |		  |
+	 |		  |		   |		  +-- DateEdit
+	 |		  |		   |		  |
+	 |		  |		   |		  +-- PasswordEdit
+	 |		  |		   |		  |
+	 |		  |		   |		  +-- FileEdit
+	 |		  |		   |
+	 |		  |		   |
+	 |		  |		   +-- ListBox
+	 |		  |		   |
+	 |		  |		   +-- TextItem
+	 |		  |
+	 |		  |
+	 |		  +-- *Stack
+	 |		  |
+	 |		  +-- BitSet
+	 |		  |
+	 |		  +-- CharSet
+	 |		  |
+	 |		  +-- *CircularBuffer
+	 |		  |
+	 |		  +-- TimeDiff
+	 |		  |
+	 |		  +-- Time
+	 |		  |
+	 |		  +-- FileSelector
+	 |
+	 |
+	 +-- _ListNode ----- *ListNode
+	 |
+	 +-- Screen
+	 |
+	 +-- Keyboard
+	 |
+	 +-- Thread ----- Program
+	 |
+	 +-- IniFile
+	 |
+	 +-- ResourceFile ----- ProgramSettings
+	 |
+	 +-- Event
+

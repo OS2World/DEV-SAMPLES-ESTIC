@@ -1,0 +1,8 @@
+This code detects if the dos session is running in an OS/2 window:
+
+        int OS2Window ()
+        {
+            return inp (0x3D6) == 0;
+        }
+
+

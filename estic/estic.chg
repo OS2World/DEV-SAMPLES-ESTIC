@@ -1,0 +1,315 @@
+
+0.888:
+
+  * ISTEC 1003 wird untersttzt und kann auch bei nicht vorhandener
+    ISTEC angew„hlt werden.
+
+  * L”schen von Gebhren ist ohne Fehlermeldung m”glich (das betrifft
+    auch das Kommandozeilenprogramm ICLOAD).
+
+  * Die OS/2 Version sollte auch an Schnittstellen mit den alten 16450
+    Chips tun.
+
+  * Diagnose-Modus implementiert.
+
+  * Diverse kleinere nderungen, z.B. "Bitte warten" Fenster wenn eine
+    gewnschte Operation etwas dauert.
+
+
+0.999:
+
+  * Fehlerhaften Headerstring im Fileselektor beim Ausdruck korrigiert.
+
+  * EAZ-Gruppenmenue ist jetzt zug„nglich wenn das Protokoll 1TR6 ist.
+
+  * INI File wurde nicht geschlossen.
+
+  * Einzelgespr„chsnachweis implementiert.
+
+  * ISDN4Linux Monitor.
+
+
+1.00:
+
+  * Fehler im Linux Bildschirm-Modul behoben. Unter Linux ist eine
+    Bildschirmausgabe nicht m”glich ohne den Cursor zu bewegen. Das fhrte
+    dazu, daá der Cursor verloren ging, wenn im Hintergrund Bildschirm-
+    bereiche upgedated wurden (Extremfall: isdn4linux Monitor).
+
+  * Code im isdn4linux Monitor ge„ndert um den Verbrauch an CPU Resourcen
+    klein zu halten (File wird jetzt nur noch einmal ge”ffnet, usw.).
+
+  * File-Browser zum Ansehen der Logfiles innerhalb von ESTIC eingebaut.
+
+  * Menue-Eintrag "ISDN4Linux Monitor" wurde nicht upgedated, wenn beim
+    Starten das Monitor-Fenster automatisch ge”ffnet wurde (z.B. durch
+    Eintrag in estic.ini).
+
+  * Abholen der Gebhren und Einschalten des Debugmodus erfolgte zu oft
+    (Fehler in IstecApp::Idle).
+
+  * Debug-Log fr Kommunikation mit der ISTEC.
+
+  * Wartezeit vor Abholen der Gebhren nach einem Gespr„ch. Bei einigen
+    Anwendern wurden immer 0 Einheiten fr alle Gespr„che geloggt.
+
+  * FreeBSD-Version. Dank an meinen Provider Seicom (speziell an Peter
+    Dieth, dieth@seicom.net) fr den Remote-Account auf einem FreeBSD-
+    Rechner, vielen Dank an Christian Kratzer (ck@toplink.de) fr's Testen
+    und fr's Bier :-)
+
+  * Vorbereitet fr die neue ROM-Version 1.92, die Kombi-Dienste kann.
+    Nicht getestet, muá im .ini File explizit eingeschaltet werden.
+
+  * Info-Boxen k”nnen auch mit Enter geschlossen werden.
+
+  * Das Loggen von Gespr„chen mit 0 Einheiten (es kam keine Verbindung
+    zustande) kann unterdrckt werden.
+
+  * Diverse Checks fr die einkommenden Debug-Nachrichten sollten dafr
+    sorgen, daá ESTIC bei einem šbertragungsfehler nicht gleich den
+    L”ffel schmeiát.
+
+  * Default Sprache und Land sind jetzt fr Linux & FreeBSD auf deutsch
+    bzw. Deutschland gesetzt (unter DOS & OS/2 wird die Default-Einstellung
+    des Betriebssystems benutzt).
+
+  * Einstellung von Kosten/Einheit wird auch beim Einzelgespr„chsnachweis
+    verwendet.
+
+  * DOS Version jetzt als 32-Bit Version mit Extender wg. Speichermangel.
+
+
+1.01:
+
+  * Direkt nach dem Starten von ESTIC erzeugten Diagnose-Meldungen von der
+    ISTEC Fehler im Logfile und wurden so lange nicht ausgewertet, bis das
+    Matrixfenster ge”ffnet, oder das Ger„t einmal aktiv wurde.
+
+  * Debug-Log erweitert.
+
+  * Versucht diverse Protokoll-Fehlerchen der ISTEC zu umgehen. Das ist nicht
+    immer m”glich, da aufgrund von Fehlern z.T. mehrere Meldungen von der
+    ISTEC auf eine Art und Weise verstmmelt werden, die ein Recovery
+    unm”glich macht.
+
+  * Einstellung fr die Firmware-Version in estic.ini wurde an der
+    letztendlich entscheidenden Stelle ignoriert. Firmware-Version wird jetzt
+    beim Lesen der Konfiguration von der ISTEC gesetzt, d.h. die Variable in
+    estic.ini muá nur noch gesetzt werden, wenn ohne angeschlossene ISTEC
+    .IC Files editiert werden sollen. Default ist Firmware < 1.92 (keine
+    Kombidienste).
+
+  * Umschaltung auf Text-Modus ist jetzt in ESTIC.INI einstellbar. Der zuvor
+    unter DOS & OS/2 verwendete Modus 80*30 arbeitet nur mit VGA's.
+
+
+1.10:
+
+  * Anpassung des isdn4linux Monitors an die neue Version (0.7beta).
+
+  * Segmentation violation beim Zugriff auf ein Diskettenlaufwerk mit nicht
+    eingelegter Diskette entfernt (OS/2, spunk).
+
+  * Englische Version. Hier k”nnen zum Teil noch Dinge fehlerhaft sein
+    (was wohl "Wahlbewertung" oder "Halbamt" auf englisch heiát? :-)
+
+  * Die Einstellm”glichkeit fr die Update-Frequenz des isdn4linux Monitors
+    gibt es nicht mehr.
+
+  * Zeit/Datum kann wahlweise rechts oben im Hauptmenue angezeigt werden.
+
+  * File Viewer schmiert unter Linux nicht mehr ab, wenn versucht wird,
+    Bin„rdateien anzusehen (spunk).
+
+  * Wahlweise separate Alias-Datei in der auch Aliase fr ausgehende Nummern
+    angegeben werden k”nnen.
+
+  * Aliase k”nnen von ESTIC aus erneut eingelesen werden (Voraussetzung ist,
+    daá eine separate Aliasdatei definiert war).
+
+  * Diverse kleinere Bugfixes.
+
+
+1.20:
+
+  * Im Resource File war die deutsche Version des Fensters fr die
+    Konfiguration eines einzelnen Endger„tes nicht deutsch sondern
+    englisch.
+
+  * Vorbereitet fr die Version 1.93 der ISTEC Firmware. Das betrifft auch
+    einen Teil der Menues.
+
+  * Debug-Code eingebaut um einen "index out of bounds" Fehler beim Zugriff
+    auf eine der verwendeten Collections zu lokalisieren.
+
+  * Neue Option in estic.ini "AutoReadAliases", die bewirkt, daá nach jedem
+    Gespr„ch, vor der Suche in Alias-Bestand die Alias-Datei neu eingelesen
+    wird.
+
+  * Defaultpreis fr eine Einheit sind jetzt 0.12 statt 0.23 DM.
+
+  * Anpassung an die Version 1.93 der Istec Firmware, die Firmware wird
+    automatisch erkannt.
+
+  * Komplettes Redesign der Fenster, Window-Manager.
+
+  * X Window Version (Linux + FreeBSD). Das ist eigentlich eine nderung
+    an spunk.
+
+  * Settings File (spunk) eingebaut. Offene Fenster sowie s„mtliche Fenster-
+    gr”áen und Positionen werden gespeichert.
+
+  * Name fr die Logfiles kann jetzt auch die Nummer des Ger„tes enthalten,
+    von dem der Anruf ausging. Dadurch lassen sich nach Anschluss getrennte
+    Logfiles erzeugen.
+
+  * Code zum Laden und Speichern der Konfigurationen an die neue Firmware
+    angepasst. ACHTUNG: Die *.ic Files sind *nicht* mehr kompatibel zu
+    denen von ISTEC.EXE erzeugten.
+
+  * Kleinere nderungen am RS232 Code der DOS Version (spunk). Es besteht
+    eine gewisse Wahrscheinlichkeit, daá ESTIC jetzt besser unter Windows
+    und Windows 95 l„uft - viel Hoffnung mache ich mir allerdings nicht.
+
+  * Die DOS Version verwender den DOS4GW Extender statt PMODEW. Das ist
+    ein Test um zu sehen, ob dadurch die DOS Version zu den diversen
+    Speichermanagern und Programmladern kompatibler wird.
+
+  * Diverse kleinere nderungen.
+
+
+1.22:
+
+  * Die in der Verbindungsmatrix angezeigte Nummer wurde in bestimmten
+    F„llen nach Auflegen des H”rers nicht gel”scht.
+
+  * Beim Laden der Anlagenkonfiguration wurde in dem Datensatz mit dem
+    ESTIC gearbeitet hat, die TFE immer auf den Wert 33 gesetzt.
+
+  * Bei der Firmware 1.92 wurden beim Laden der Ger„tekonfigurationen
+    Ger„te "Kombidienst" zu "Fernsprechen" angepasst (Kombidienst wurde
+    als ungltiger Wert angesehen).
+
+  * Beim Laden der Ger„tekonfigurationen wurden intere Umleitungen falsch
+    bernommen.
+
+  * ESTIC sollte jetzt auch mit Ger„ten arbeiten, die mit der Platinen-
+    Revision 3 ausgestattet sind. Diese ben”tigen zum Betrieb eines
+    zus„tzlichen Optokopplers noch aktive Steuerleitungen auf der RS232
+    zur Stromversorgung.
+
+
+1.30:
+
+  * Umstellung auf Event-Steuerung, dadurch weitere Modularisierung.
+
+  * nderung einiger Filenamen.
+
+  * Modul fr externes Interface, das nichts weiter macht als einen Event-
+    Handler bereitzustellen.
+
+  * Falls Fehler beim ™ffnen des seriellen Ports auftraten hat die Hinter-
+    grundroutine trotzdem versucht, davon zu lesen.
+
+  * Der Isdn4Linux-Monitor hatte ein undefiniertes Verhalten wenn beim ™ffnen
+    des Files /dev/isdninfo Fehler auftraten.
+
+  * Das Gebhrenfenster ist nicht mehr modal, sondern kann wie die anderen
+    Fenster auf den Desktop gelegt werden und wird upgedated wenn sich die
+    Gebhren „ndern.
+
+  * Der verwendete DOS Extender setzt den DOS Aufruf zur Abfrage der
+    Country Information nicht korrekt um, deshalb wurde unter purem DOS
+    das eingestellte Land nicht erkannt. Diese Abfrage sollte jetzt tun,
+    ein COUNTRY= in CONFIG.SYS ist aber trotzdem notwendig. (spunk)
+
+  * Die Abfrage auf die eingestellte Sprache unter den *nix Varianten
+    etwas relaxed, es sollten jetzt mehr Einstellungen von LC_CTYPE
+    erkannt werden. (spunk)
+
+  * Anpasssungen an NetBSD/Amiga (Ralph-Thomas Aussem,
+    1aussem@informatik.uni-hamburg.de) und Solaris (Martin Helmling,
+    mh@octogon.de).
+
+  * Wiederholtes Einschalten des Diagnosemodus soll mit neueren Firmware-
+    Versionen nicht mehr notwendig sein (Schalter in ESTIC.INI).
+
+  * L”schen einer Rufumleitung wurde unter bestimmten Bedingungen von
+    der Istec ignoriert bzw. fehlerhaft eingetragen.
+
+  * "nderungen permanent machen" existiert nicht mehr als separater
+    Menuepunkt. Der entsprechende Befehl wird immer abgesetzt, wenn neu
+    programmiert wurde.
+
+  * Der Anschluá fr die externe Musikeinstellung wurde nicht aus dem
+    Eingabefeld im Menue in die Konfigurationsstruktur bernommen.
+
+  * MSN-Gruppen Menue ge„ndert.
+
+  * Fehler bei Beendigung des MSN-Gruppen Menues behoben.
+
+  * Hintere Stellen der Nummern k”nnen im Logfile ausge-X-t werden (die
+    Idee ist von Markus Bellenberg (jmb@outbreak.gun.de).
+
+  * Anpassung an die Firmware 1.95. Emmerich hat (ohne das zu dokumentieren)
+    an die Ger„te-Infos noch ein (soweit ich weiá unbenutztes) Byte
+    angeh„ngt. Das w„re ja sonst auch zu einfach gewesen :-)
+    Die Menues zum Einstellen des Anklopfens sind noch ziemlich umst„ndlich
+    weil sie immer wieder zuklappen, aber ich wollte die neue Version
+    drauáen haben um die Mailflut zu stoppen. Stay tuned...
+
+
+1.40:
+
+  * Fehler beim Zerlegen von Strings in Tokens (spunk), daher fehlerhafte
+    Auswertung von Schlsselw”rtern im ini File.
+
+  * Falscher Vergleich bei DiagMode=auto (> statt <=, Hinweis von Johannes
+    Eder, eder@elisa.greenie.muc.de).
+
+  * Windows NT Version (spunk).
+
+  * Das lange angekndigte Cron Features ist da.
+
+  * Neue Variable in estic.ini, ShortWaitAfterMsg. Das ist eine Optimierung,
+    von der ich nicht weiss, ob sie in allen F„llen tut. Wenn's Probleme
+    gibt, abschalten.
+
+  * Falsche Statuszeile bei der Zuordnung der MSN's.
+
+  * Die Telefonnummer fr meinen Linux-Rechner im DOC File ist seit
+    der Version 1.2 falsch gewesen :-(
+
+  * Die X Versionen sind etwas flexibler, was die Font-Suche angeht (spunk).
+
+  * -display und -geometry werden unter X untersttzt (spunk).
+
+
+1.42:
+
+  * In iccom.cc hat die explizite Instantiierung fr CircularBuffer<IstecMsg*>
+    gefehlt, ohne die gcc >= 2.6.0 nicht korrekt arbeitet. Hinweis von
+    Johannes Eder (eder@elisa.greenie.muc.de).
+
+  * Der C++ Compiler von FreeBSD braucht in devstate.cc einen expliziten Cast
+    um den passenden TimeDiff Konstruktor auszusuchen. Hinweis von Andreas S.
+    Wetzel (mickey@deadline.snafu.de).
+
+
+1.50:
+
+  * Kleinere Anpassungen an FreeBSD, Diffs von Oliver von Bueren (Bren?),
+    (ovb@swissmail.com)
+
+  * Mit Ausnahme des Settings-Files wurde '~' auf *NIX Maschinen nicht durch
+    das Home-Verzeichnis ersetzt. Es sieht so aus, als ob das bei einigen
+    Betriebssystemen die C Library macht, und bei anderen nicht...
+
+  * Komplettes Hauptmenue umstrukturiert.
+
+  * Hauptmenue wird jetzt auch aus der Resource geladen.
+
+  * Tausende von nderungen/Erweiterungen zur Anpassung an Version 2.0 der
+    Firmware.
+
